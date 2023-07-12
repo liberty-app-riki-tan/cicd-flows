@@ -18,6 +18,8 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+      - run: whoami
+        shell: bash
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
