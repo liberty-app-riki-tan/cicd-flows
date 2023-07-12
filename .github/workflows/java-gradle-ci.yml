@@ -13,7 +13,14 @@ jobs:
     runs-on: self-hosted
     name: CI flow of java gradle build
     steps:
-      - uses: PROTOTYPE/cicd-actions/.github/actions/ci-java-gradle-action@v1
+      - name: Code CI build
+        uses: PROTOTYPE/cicd-actions/.github/actions/ci-java-gradle-action@v1
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+      - name: Docker build and push to local registry
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          tags: 333501191747.dkr.ecr.us-east-1.amazonaws.com/test-cicd-proj:latest
