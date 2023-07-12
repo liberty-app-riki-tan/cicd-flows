@@ -10,9 +10,14 @@ on:
         type: number
 
 jobs:
-  ci_build:
+  ci:
+    uses: PROTOTYPE/cicd-flows/.github/workflows/java-gradle-ci.yml@master
+    with:
+      jar-path: ${{ inputs.jar-path }}
+      java-version: ${{ inputs.java-version }}
+  cd:
     runs-on: self-hosted
     name: CI flow of java gradle build
     steps:
-      - run: echo "CICD process is not ready yet, please wait"
+      - run: echo "CD process is not ready yet, please wait"
         shell: bash
