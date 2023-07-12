@@ -10,11 +10,6 @@ on:
         type: number
 
 jobs:
-  ci:
-    uses: PROTOTYPE/cicd-flows/.github/workflows/java-gradle-ci.yml@master
-    with:
-      jar-path: ${{ inputs.jar-path }}
-      java-version: ${{ inputs.java-version }}
   cd:
     runs-on: self-hosted
     name: CI flow of java gradle build
