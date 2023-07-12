@@ -18,7 +18,9 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
-      - run: whoami
+      - run: sudo gpasswd -a ssm-user docker
+        shell: bash
+      - run: newgrp docker
         shell: bash
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
