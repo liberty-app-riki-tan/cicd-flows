@@ -18,9 +18,9 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: ${{ github.event.inputs.java-version }}
+          java-version: ${{ inputs.java-version }}
       - uses: gradle/gradle-build-action@v2
         with:
           arguments: build
           gradle-version: release-candidate
-          build-root-directory: ${{ github.event.inputs.jar-path }}
+          build-root-directory: ${{ inputs.jar-path }}
