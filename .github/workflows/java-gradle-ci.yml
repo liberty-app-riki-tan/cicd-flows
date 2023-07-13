@@ -18,15 +18,3 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver-opts: network=host
-      - name: Docker build and push to local registry
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: false
-          tags: 333501191747.dkr.ecr.us-east-1.amazonaws.com/test-cicd-proj:latest
