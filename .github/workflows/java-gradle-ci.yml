@@ -10,7 +10,9 @@ on:
       project-name:
         required: true
         type: string
-
+env:
+  aws-region: us-east-1
+  
 jobs:
   ci_build:
     runs-on: self-hosted
@@ -24,5 +26,5 @@ jobs:
       - name: Docker build and push
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
-          aws-region: us-east-1
+          aws-region: ${{ env.aws-region }}
           project-name: ${{ inputs.project-name }}
