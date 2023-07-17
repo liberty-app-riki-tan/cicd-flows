@@ -20,19 +20,19 @@ on:
         required: false
         type: string
       securityGroups:
-        required: true
+        required: false
         type: string
       subnets:
-        required: true
+        required: false
         type: string
       ecs-service:
-        required: true
+        required: false
         type: string
       ecs-cluster:
-        required: true
+        required: false
         type: string
       deploy-env:
-        required: true
+        required: false
         type: string
 jobs:
   ci:
