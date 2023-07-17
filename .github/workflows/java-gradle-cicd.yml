@@ -23,7 +23,7 @@ jobs:
   ci:
     runs-on: self-hosted
     environment:
-      name: QA
+      name: ${{ inputs.deploy-env }}
     env:
       aws-region: ${{ secrets.AWS_REGION }}
       cluster: ${{ secrets.ECS_CLUSTER }}
