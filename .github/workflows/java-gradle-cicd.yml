@@ -54,7 +54,7 @@ jobs:
           service: ${{ inputs.ecs-service }}
           cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
-          containerName: ${{ inputs.containerName }}
+          container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           securityGroups: ${{ env.securityGroups }}
