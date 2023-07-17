@@ -8,7 +8,7 @@ on:
         required: false
         type: number
       aws-region:
-        required: true
+        required: false
         type: string
       containerName:
         required: false
