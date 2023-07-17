@@ -7,28 +7,13 @@ on:
       java-version:
         required: false
         type: number
-      aws-region:
-        required: false
-        type: string
       containerName:
         required: false
         type: string
       containerPort:
         required: false
         type: string
-      targetGroupArn:
-        required: false
-        type: string
-      securityGroups:
-        required: false
-        type: string
-      subnets:
-        required: false
-        type: string
       ecs-service:
-        required: false
-        type: string
-      ecs-cluster:
         required: false
         type: string
       deploy-env:
@@ -39,6 +24,12 @@ jobs:
     runs-on: self-hosted
     environment:
       name: ${{ inputs.deploy-env }}
+    env:
+      aws-region: ${{ secrets.AWS_REGION }}
+      cluster: ${{ secrets.ECS_CLUSTER }}
+      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
+      securityGroups: ${{ secrets.SECURITYGROUPS }}
+      subnets: ${{ secrets.SUBNETS }}
     name: CICD flow of java gradle build
     steps:
       - name: Code CI build
@@ -50,7 +41,7 @@ jobs:
         id: docker-build
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.aws-region }}
           project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
@@ -58,11 +49,11 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
         with:
           service: ${{ inputs.ecs-service }}
-          cluster: ${{ secrets.ECS_CLUSTER }}
+          cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           containerName: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
-          targetGroupArn: ${{ secrets.TARGETGROUPARN }}
-          securityGroups: ${{ secrets.SECURITYGROUPS }}
-          subnets: ${{ secrets.SUBNETS }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
           wait: true
