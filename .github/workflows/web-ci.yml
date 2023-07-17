@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    inputs:
+      jar-path:
+        required: true
+        type: string
+      java-version:
+        required: true
+        type: number
+      project-name:
+        required: true
+        type: string
+  
+jobs:
+  ci_build:
+    runs-on: self-hosted
+    name: CI flow of java gradle build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Docker build and push
+        id: docker-build
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
+        with:
+          aws-region: ${{ env.aws-region }}
+          project-name: ${{ inputs.project-name }}
+      - run: echo ${{ steps.docker-build.outputs.image-name }}
+        shell: bash
