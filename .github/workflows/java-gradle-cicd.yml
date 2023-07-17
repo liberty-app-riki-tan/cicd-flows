@@ -51,7 +51,7 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
         with:
           aws-region: ${{ env.aws-region }}
-          service: ${{ inputs.ecs-service }}
+          ecs-service: ${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
