@@ -22,6 +22,12 @@ on:
       subnets:
         required: true
         type: string
+      ecs-service:
+        required: true
+        type: string
+      ecs-cluster:
+        required: true
+        type: string
 jobs:
   ci:
     runs-on: self-hosted
@@ -43,8 +49,8 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
         with:
-          service: happytree-demo
-          cluster: usa-tools-cluster
+          service: ${{ inputs.ecs-service }}
+          cluster: ${{ inputs.ecs-cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           containerName: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
