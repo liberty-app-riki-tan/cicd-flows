@@ -52,7 +52,7 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           service: ${{ inputs.ecs-service }}
-          cluster: ${{ env.cluster }}
+          ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
