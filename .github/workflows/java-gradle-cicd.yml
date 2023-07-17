@@ -31,9 +31,14 @@ on:
       ecs-cluster:
         required: true
         type: string
+      deploy-env:
+        required: true
+        type: string
 jobs:
   ci:
     runs-on: self-hosted
+    environment:
+      name: ${{ inputs.deploy-env }}
     name: CICD flow of java gradle build
     steps:
       - name: Code CI build
@@ -45,7 +50,7 @@ jobs:
         id: docker-build
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
-          aws-region: ${{ env.aws-region }}
+          aws-region: ${{ secrets.AWS_REGION }}
           project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
@@ -53,11 +58,11 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
         with:
           service: ${{ inputs.ecs-service }}
-          cluster: ${{ inputs.ecs-cluster }}
+          cluster: ${{ secrets.ECS_CLUSTER }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           containerName: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
-          targetGroupArn: ${{ inputs.targetGroupArn }}
-          securityGroups: ${{ inputs.securityGroups }}
-          subnets: ${{ inputs.subnets }}
+          targetGroupArn: ${{ secrets.TARGETGROUPARN }}
+          securityGroups: ${{ secrets.SECURITYGROUPS }}
+          subnets: ${{ secrets.SUBNETS }}
           wait: true
