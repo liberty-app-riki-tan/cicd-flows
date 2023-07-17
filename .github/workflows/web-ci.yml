@@ -1,12 +1,6 @@
 on:
   workflow_call:
     inputs:
-      jar-path:
-        required: true
-        type: string
-      java-version:
-        required: true
-        type: number
       project-name:
         required: true
         type: string
@@ -22,6 +16,6 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
-          project-name: ${{ inputs.project-name }}
+          project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
