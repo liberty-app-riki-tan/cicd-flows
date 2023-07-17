@@ -17,6 +17,12 @@ on:
       targetGroupArn:
         required: false
         type: number
+      securityGroups:
+        required: true
+        type: string
+      subnets:
+        required: true
+        type: string
 jobs:
   ci:
     runs-on: self-hosted
@@ -34,6 +40,6 @@ jobs:
           containerName: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ inputs.targetGroupArn }}
-          securityGroups: '["sg-0ade3858c5e769b5a"]'
-          subnets: '["subnet-01a45346a05442803","subnet-0bb696d17eacd674e","subnet-07ea97692d9f5b20f"]'
-          wait-for-service-stability: true
+          securityGroups: ${{ inputs.securityGroups }}
+          subnets: ${{ inputs.subnets }}
+          wait: true
