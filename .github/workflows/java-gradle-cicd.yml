@@ -12,13 +12,13 @@ on:
         type: string
       containerName:
         required: false
-        type: number
+        type: string
       containerPort:
         required: false
-        type: number
+        type: string
       targetGroupArn:
         required: false
-        type: number
+        type: string
       securityGroups:
         required: true
         type: string
