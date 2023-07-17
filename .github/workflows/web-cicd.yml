@@ -4,10 +4,21 @@ on:
       project-name:
         required: true
         type: string
+      deploy-env:
+        required: true
+        type: string
   
 jobs:
   ci_build:
     runs-on: self-hosted
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      aws-region: ${{ secrets.AWS_REGION }}
+      cluster: ${{ secrets.ECS_CLUSTER }}
+      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
+      securityGroups: ${{ secrets.SECURITYGROUPS }}
+      subnets: ${{ secrets.SUBNETS }}
     name: CI flow of java gradle build
     steps:
       - uses: actions/checkout@v3
