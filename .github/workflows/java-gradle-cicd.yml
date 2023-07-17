@@ -7,6 +7,9 @@ on:
       java-version:
         required: false
         type: number
+      aws-region:
+        required: true
+        type: string
       containerName:
         required: false
         type: number
@@ -43,7 +46,7 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
-          project-name: ${{ inputs.project-name }}
+          project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Deploy Amazon ECS task definition
