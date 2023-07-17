@@ -8,7 +8,15 @@ on:
         default: 11
         required: false
         type: number
-
+      containerName:
+        required: false
+        type: number
+      containerPort:
+        required: false
+        type: number
+      targetGroupArn:
+        required: false
+        type: number
 jobs:
   ci:
     runs-on: self-hosted
@@ -18,5 +26,14 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
-      - run: echo "CD process is not ready yet, please wait"
-        shell: bash
+      - name: Deploy Amazon ECS task definition
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
+        with:
+          service: happytree-demo
+          cluster: usa-tools-cluster
+          containerName: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ inputs.targetGroupArn }}
+          securityGroups: '["sg-0ade3858c5e769b5a"]'
+          subnets: '["subnet-01a45346a05442803","subnet-0bb696d17eacd674e","subnet-07ea97692d9f5b20f"]'
+          wait-for-service-stability: true
