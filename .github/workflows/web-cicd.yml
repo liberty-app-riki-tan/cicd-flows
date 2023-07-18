@@ -25,7 +25,7 @@ jobs:
       targetGroupArn: ${{ secrets.TARGETGROUPARN }}
       securityGroups: ${{ secrets.SECURITYGROUPS }}
       subnets: ${{ secrets.SUBNETS }}
-    name: CI flow of java gradle build
+    name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
       - name: Docker build and push
