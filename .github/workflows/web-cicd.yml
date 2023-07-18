@@ -36,3 +36,16 @@ jobs:
           project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
+      - name: Deploy Amazon ECS task definition
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
+        with:
+          aws-region: ${{ env.aws-region }}
+          ecs-service: ${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          wait: true
