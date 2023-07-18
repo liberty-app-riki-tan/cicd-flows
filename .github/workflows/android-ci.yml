@@ -23,3 +23,10 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew :app:assembleQaDebug
+      
+    - name: Push to S3
+      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
+      with:
+        filePath: /app/build/outputs/apk/qa/debug/
+        s3-url: usa-qa-automate-test
+        s3-prefix: valkyrie
