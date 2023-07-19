@@ -30,7 +30,7 @@ jobs:
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
       with:
-        filePath: ${{ GITHUB_WORKSPACE }}/app/build/outputs/apk/qa/debug/
+        filePath: $GITHUB_WORKSPACE/app/build/outputs/apk/qa/debug/
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
         packageKey: android/${{ env.date-time }}
