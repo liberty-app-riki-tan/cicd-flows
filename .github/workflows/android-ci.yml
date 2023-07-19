@@ -23,7 +23,12 @@ jobs:
     #  run: chmod +x gradlew
     #- name: Build with Gradle
     #  run: ./gradlew :app:assembleQaDebug
-      
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.9
+          
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
       with:
