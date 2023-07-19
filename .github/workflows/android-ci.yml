@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: [ self-hosted, macOS, android ]
     env:
-      date-time: $(date +'%Y%m%dT%H%M%S')
+      date-time: "$(date +'%Y%m%dT%H%M%S')"
     steps:
     - uses: actions/checkout@v3
     - name: set up JDK
@@ -27,7 +27,7 @@ jobs:
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
       with:
-        filePath: $GITHUB_WORKSPACE/app/build/outputs/apk/qa/debug/
+        filePath: "$GITHUB_WORKSPACE/app/build/outputs/apk/qa/debug/"
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
         packageKey: android/${{ env.date-time }}
