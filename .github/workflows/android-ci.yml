@@ -4,9 +4,6 @@ on:
       java-version:
         required: true
         type: number
-env:
-  date-time: $(date +'%Y%m%dT%H%M%S')
-  work-space: $GITHUB_WORKSPACE
 
 jobs:
   build:
@@ -31,4 +28,4 @@ jobs:
         filePath: ${{ env.work-space }}/app/build/outputs/apk/qa/debug/
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
-        packageKey: android/${{ env.date-time }}
+        packageKey: android/${{ github.sha }}-${{ github.run_number }}
