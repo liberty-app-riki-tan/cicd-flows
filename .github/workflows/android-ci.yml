@@ -19,10 +19,10 @@ jobs:
         distribution: 'temurin'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew :app:assembleQaDebug
+    #- name: Grant execute permission for gradlew
+    #  run: chmod +x gradlew
+    #- name: Build with Gradle
+    #  run: ./gradlew :app:assembleQaDebug
       
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
