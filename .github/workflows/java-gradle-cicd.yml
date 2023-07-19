@@ -26,7 +26,7 @@ jobs:
       name: ${{ inputs.deploy-env }}
     env:
       aws-region: ${{ secrets.AWS_REGION }}
-      aws-role: arn:aws:iam::395583234375:role/tf_usa_dev_jenkins_cicd_assume_role
+      aws-role: ${{ secrets.AWS_ROLE }}
       cluster: ${{ secrets.ECS_CLUSTER }}
       targetGroupArn: ${{ secrets.TARGETGROUPARN }}
       securityGroups: ${{ secrets.SECURITYGROUPS }}
