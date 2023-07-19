@@ -17,6 +17,6 @@ jobs:
       - id: foo
         uses: PROTOTYPE/cicd-actions/.github/actions/demo-action@v1
         with:
-          who-to-greet: $(date +'%Y%m%dT%H%M%S')
+          who-to-greet: www/$(date +'%Y%m%dT%H%M%S')
       - run: echo random-number ${{ steps.foo.outputs.random-number }}
         shell: bash
