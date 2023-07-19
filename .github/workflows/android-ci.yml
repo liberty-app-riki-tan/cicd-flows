@@ -20,8 +20,10 @@ jobs:
         cache: gradle
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      shell: bash
     - name: Build with Gradle
       run: ./gradlew :app:assembleQaDebug
+      shell: bash
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
       with:
