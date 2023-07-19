@@ -46,6 +46,7 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
