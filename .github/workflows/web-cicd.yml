@@ -21,10 +21,12 @@ jobs:
       name: ${{ inputs.deploy-env }}
     env:
       aws-region: ${{ secrets.AWS_REGION }}
+      aws-role: ${{ secrets.AWS_ROLE }}
       cluster: ${{ secrets.ECS_CLUSTER }}
       targetGroupArn: ${{ secrets.TARGETGROUPARN }}
       securityGroups: ${{ secrets.SECURITYGROUPS }}
       subnets: ${{ secrets.SUBNETS }}
+      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
     name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
@@ -33,6 +35,7 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
@@ -40,6 +43,7 @@ jobs:
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
         with:
           aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
           ecs-service: ${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
