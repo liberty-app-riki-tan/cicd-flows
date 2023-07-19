@@ -30,4 +30,4 @@ jobs:
         filePath: ./app/build/outputs/apk/qa/debug/
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
-        packageKey: android/$RANDOM
+        packageKey: android/${{ RANDOM }}
