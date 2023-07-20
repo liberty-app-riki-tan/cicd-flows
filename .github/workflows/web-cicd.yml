@@ -30,6 +30,7 @@ jobs:
       securityGroups: ${{ secrets.SECURITYGROUPS }}
       subnets: ${{ secrets.SUBNETS }}
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
+      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
     name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
@@ -44,6 +45,7 @@ jobs:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Deploy Amazon ECS task definition
