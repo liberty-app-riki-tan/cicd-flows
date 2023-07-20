@@ -8,6 +8,10 @@ on:
 jobs:
   build:
     runs-on: [ self-hosted, macOS, android ]
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      gradle-cmd: ${{ secrets.GRADLEW_CMD }}
     steps:
     - uses: actions/checkout@v3
     - name: set up JDK
@@ -20,7 +24,7 @@ jobs:
       run: chmod +x gradlew
       shell: bash
     - name: Build with Gradle
-      run: ./gradlew :app:assembleQaDebug
+      run: ./gradlew ${{ env.gradle-cmd }}
       shell: bash
     - name: Push to S3
       uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
