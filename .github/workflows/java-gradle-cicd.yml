@@ -38,7 +38,7 @@ jobs:
     name: CICD flow of java gradle build
     steps:
       - name: Init Config
-        uses: ./.github/actions/get-config
+        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
         with:
           service-name:: ${{ inputs.service-name }}
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
