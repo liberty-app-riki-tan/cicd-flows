@@ -30,6 +30,10 @@ jobs:
     name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
+      - name: Init Config
+        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
