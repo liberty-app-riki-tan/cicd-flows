@@ -1,1 +1,29 @@
+on:
+  workflow_call:
+    inputs:
+      deploy-env:
+        required: false
+        type: string
 
+jobs:
+  build:
+    runs-on: [ self-hosted, macOS, ios ]
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      exec-cmd: ${{ secrets.EXEC_CMD }}
+    steps:
+    - uses: actions/checkout@v3
+    - name: Bundle Install
+      run: bundle install
+      shell: bash
+    - name: Bundle EXEC Fastlane
+      run: bundle exec fastlane ${{ env.exec-cmd }}
+      shell: bash
+    - name: Push to S3
+      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
+      with:
+        filePath: ${{ github.workspace }}/build/
+        s3-url: usa-qa-automate-test
+        s3-prefix: valkyrie
+        packageKey: ios/${{ github.sha }}-${{ github.run_number }}
