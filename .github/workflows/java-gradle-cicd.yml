@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      service-name:
+      service-config-name:
         required: true
         type: string
       jar-path:
@@ -40,7 +40,7 @@ jobs:
       - name: Init Config
         uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
         with:
-          service-name:: ${{ inputs.service-name }}
+          service-config-name: ${{ inputs.service-config-name }}
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
       - name: Code CI build
