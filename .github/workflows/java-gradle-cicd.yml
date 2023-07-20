@@ -37,10 +37,6 @@ jobs:
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
     name: CICD flow of java gradle build
     steps:
-      - name: Init Config
-        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
-        with:
-          service-config-name: ${{ inputs.service-config-name }}
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
       - name: Code CI build
@@ -48,6 +44,10 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+      - name: Init Config
+        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
         uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
