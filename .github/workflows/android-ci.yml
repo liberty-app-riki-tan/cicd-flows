@@ -4,6 +4,9 @@ on:
       java-version:
         required: true
         type: number
+      deploy-env:
+        required: false
+        type: string
 
 jobs:
   build:
