@@ -1,0 +1,14 @@
+name: 'Get Config Action'
+description: 'Get configuratoin of worklfows'
+inputs:
+  service-name:
+    required: true
+    type: string
+    
+runs:
+  using: "composite"
+  steps:
+    - - name: Upload to S3
+        run: |
+          cp ${{ github.action_path }}/${{ github.service-name }}/upload.py ./upload.py
+        shell: bash
