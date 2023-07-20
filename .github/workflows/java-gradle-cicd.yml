@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      service-name:
+        required: true
+        type: string
       jar-path:
         required: true
         type: string
@@ -34,6 +37,10 @@ jobs:
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
     name: CICD flow of java gradle build
     steps:
+      - name: Init Config
+        uses: ./.github/actions/get-config
+        with:
+          service-name:: ${{ inputs.service-name }}
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
       - name: Code CI build
