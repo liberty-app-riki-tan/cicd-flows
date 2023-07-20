@@ -37,13 +37,13 @@ jobs:
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
       - name: Code CI build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ci-java-gradle-action@v1
+        uses: ${{ env.cicd-org }}/cicd-actions/.github/actions/ci-java-gradle-action@v1
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
       - name: Docker build and push
         id: docker-build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
+        uses: ${{ env.cicd-org }}/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -51,7 +51,7 @@ jobs:
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Deploy Amazon ECS task definition
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
+        uses: ${{ env.cicd-org }}/cicd-actions/.github/actions/ecs-deploy@v1
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
