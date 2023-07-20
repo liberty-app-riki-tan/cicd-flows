@@ -51,7 +51,7 @@ jobs:
           service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@master
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
