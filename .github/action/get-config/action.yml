@@ -5,6 +5,10 @@ inputs:
     required: true
     type: string
     
+env:
+  cicd-org: PROTOTYPE
+  aws-region: us-east-1
+    
 runs:
   using: "composite"
   steps:
