@@ -10,8 +10,6 @@ on:
       project-name:
         required: true
         type: string
-env:
-  aws-region: us-east-1
   
 jobs:
   ci_build:
@@ -23,11 +21,3 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
-      - name: Docker build and push
-        id: docker-build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
-        with:
-          aws-region: ${{ env.aws-region }}
-          project-name: ${{ inputs.project-name }}
-      - run: echo ${{ steps.docker-build.outputs.image-name }}
-        shell: bash
