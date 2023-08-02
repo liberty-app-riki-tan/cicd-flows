@@ -29,6 +29,6 @@ jobs:
         with:
           filePath: ${{ github.workspace }}/${{ inputs.project-folder }}/
           s3-url: usa-qa-automate-test
-          s3-prefix: ${{ inputs.project-folder }}
+          s3-prefix: /
           packageKey: /
           rootUrl: ${{ env.root-url }}
