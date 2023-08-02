@@ -12,6 +12,7 @@ jobs:
       name: ${{ inputs.deploy-env }}
     env:
       exec-cmd: ${{ secrets.EXEC_CMD }}
+      root-url: ${{ secrets.ROOT_URL }}
     steps:
     - uses: actions/checkout@v3
     - name: Bundle Install
@@ -27,3 +28,4 @@ jobs:
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
         packageKey: ios/${{ github.sha }}-${{ github.run_number }}
+        rootUrl: ${{ env.root-url }}
