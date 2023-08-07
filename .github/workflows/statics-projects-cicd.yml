@@ -44,6 +44,6 @@ jobs:
         with:
           filePath: ${{ github.workspace }}/${{ inputs.project-folder }}/
           s3-url: ${{ env.s3-url }}
-          s3-prefix: valkyrie
-          packageKey: ${{ inputs.project-folder }}
+          s3-prefix: NA
+          packageKey: NA
           rootUrl: ${{ env.root-url }}
