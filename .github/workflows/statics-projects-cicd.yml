@@ -31,6 +31,10 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
       - name: Push to S3
         uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
         with:
