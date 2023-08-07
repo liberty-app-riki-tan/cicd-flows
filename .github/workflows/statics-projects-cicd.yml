@@ -37,7 +37,7 @@ jobs:
           python-version: 3.8
       - name: install package
         run: |
-            pip install boto3=1.26.153
+            pip install boto3==1.26.153
         shell: bash
       - name: Push to S3
         uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@master
