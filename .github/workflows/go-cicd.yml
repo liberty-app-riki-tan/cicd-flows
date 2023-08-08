@@ -4,9 +4,6 @@ on:
       service-config-name:
         required: true
         type: string
-      go-version:
-        required: false
-        type: number
       containerName:
         required: false
         type: string
@@ -19,8 +16,9 @@ on:
       deploy-env:
         required: false
         type: string
+  
 jobs:
-  ci:
+  ci_build:
     runs-on: self-hosted
     environment:
       name: ${{ inputs.deploy-env }}
@@ -33,12 +31,36 @@ jobs:
       subnets: ${{ secrets.SUBNETS }}
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
       aws-registry: ${{ secrets.DOCKER_REGISTRY }}
-    name: CICD flow of java gradle build
+    name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Go
-        uses: actions/setup-go@v3
+      - name: Init Config
+        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
         with:
-          go-version: '1.20'
-      - run: make
+          service-config-name: ${{ inputs.service-config-name }}
+      - name: Docker build and push
+        id: docker-build
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
+      - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
+      - name: Deploy Amazon ECS task definition
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
+        timeout-minutes: 3
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: ${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file }}
+          wait: true
