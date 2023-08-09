@@ -39,6 +39,10 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
+      - name: Init Config
+        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 3
