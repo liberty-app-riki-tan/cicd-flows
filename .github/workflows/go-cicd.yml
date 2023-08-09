@@ -34,6 +34,11 @@ jobs:
       loadBalancers-json: ${{ secrets.LB_JSON }}
     name: CICD flow of Web
     steps:
+      - name: Assume new role
+        uses: PROTOTYPE/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 3
