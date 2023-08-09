@@ -34,15 +34,21 @@ jobs:
       loadBalancers-json: ${{ secrets.LB_JSON }}
     name: CICD flow of Web
     steps:
-      - name: Assume new role
-        uses: PROTOTYPE/cicd-actions/.github/actions/change-aws-role@master
-        with:
-          aws-region: ${{ env.aws-region }}
-          aws-role: ${{ env.aws-role }}
+      - uses: actions/checkout@v3
       - name: Init Config
         uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+      - name: Docker build and push
+        id: docker-build
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
+      - run: echo ${{ steps.docker-build.outputs.image-name }}
+        shell: bash
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 3
@@ -51,7 +57,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           ecs-service: ${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
-          image-full-name: 395583234375.dkr.ecr.us-east-1.amazonaws.com/traefik:b12367828bc3c5272cd64c42dbbc1b5086c20c2f
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
