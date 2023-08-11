@@ -12,14 +12,22 @@ jobs:
     steps:
       - run: |
           echo Config of environment:
-          echo AWS REGION: ${{ secrets.AWS_REGION }}
-          echo AWS ROLE: ${{ secrets.AWS_ROLE }}
-          echo ECS CLUSTER: ${{ secrets.ECS_CLUSTER }}
-          echo TARGET GROUP ARN: ${{ secrets.TARGETGROUPARN }}
-          echo SECURITY GROUPS :${{ secrets.SECURITYGROUPS }}
-          echo SUBNETS: ${{ secrets.SUBNETS }}
-          echo TASK DEF FILE: ${{ secrets.TASK_DEF_FILE }}
-          echo DOCKER REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-          echo LOAD BALANCERS: ${{ secrets.LB_JSON }} | 
-          sed 's/./& /g'
+          echo AWS REGION: 
+          echo ${{ secrets.AWS_REGION }} | sed 's/./& /g'
+          echo AWS ROLE: 
+          echo ${{ secrets.AWS_ROLE }} | sed 's/./& /g'
+          echo ECS CLUSTER: 
+          echo ${{ secrets.ECS_CLUSTER }} | sed 's/./& /g'
+          echo TARGET GROUP ARN: 
+          echo ${{ secrets.TARGETGROUPARN }} | sed 's/./& /g'
+          echo SECURITY GROUPS: 
+          echo ${{ secrets.SECURITYGROUPS }} | sed 's/./& /g'
+          echo SUBNETS: 
+          echo ${{ secrets.SUBNETS }} | sed 's/./& /g'
+          echo TASK DEF FILE: 
+          echo ${{ secrets.TASK_DEF_FILE }} | sed 's/./& /g'
+          echo DOCKER REGISTRY: 
+          echo ${{ secrets.DOCKER_REGISTRY }} | sed 's/./& /g'
+          echo LOAD BALANCERS: 
+          echo ${{ secrets.LB_JSON }} | sed 's/./& /g'
         shell: bash
