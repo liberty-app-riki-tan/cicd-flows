@@ -13,7 +13,7 @@ jobs:
       - run: |
           echo Config of environment:
           echo AWS REGION: 
-          echo ${{ secrets.AWS_REGION }} | sed 's/./& /g'
+          echo "echo ${{ secrets.AWS_REGION }} | sed 's/./& /g'" | sed 's/ //g'
           echo AWS ROLE: 
           echo ${{ secrets.AWS_ROLE }} | sed 's/ //g'
           echo ECS CLUSTER: 
