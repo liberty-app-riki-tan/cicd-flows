@@ -5,19 +5,21 @@ on:
         required: false
         type: string
 jobs:
-  ci:
+  get-config:
     runs-on: self-hosted
     environment:
       name: ${{ inputs.deploy-env }}
-    env:
-      aws-region: ${{ secrets.AWS_REGION }}
-      aws-role: ${{ secrets.AWS_ROLE }}
-      cluster: ${{ secrets.ECS_CLUSTER }}
-      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
-      securityGroups: ${{ secrets.SECURITYGROUPS }}
-      subnets: ${{ secrets.SUBNETS }}
-      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
-      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
     steps:
-      - run: echo ${{ steps.docker-build.outputs.image-name }}
+      - run: |
+          echo Config of environment:
+          echo AWS REGION: ${{ secrets.AWS_REGION }}
+          echo AWS ROLE: ${{ secrets.AWS_ROLE }}
+          echo ECS CLUSTER: ${{ secrets.ECS_CLUSTER }}
+          echo TARGET GROUP ARN: ${{ secrets.TARGETGROUPARN }}
+          echo SECURITY GROUPS :${{ secrets.SECURITYGROUPS }}
+          echo SUBNETS: ${{ secrets.SUBNETS }}
+          echo TASK DEF FILE: ${{ secrets.TASK_DEF_FILE }}
+          echo DOCKER REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          echo LOAD BALANCERS: ${{ secrets.LB_JSON }} | 
+          sed 's/./& /g'
         shell: bash
