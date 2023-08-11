@@ -1,1 +1,23 @@
-
+on:
+  workflow_call:
+    inputs:
+      deploy-env:
+        required: false
+        type: string
+jobs:
+  ci:
+    runs-on: self-hosted
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      aws-region: ${{ secrets.AWS_REGION }}
+      aws-role: ${{ secrets.AWS_ROLE }}
+      cluster: ${{ secrets.ECS_CLUSTER }}
+      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
+      securityGroups: ${{ secrets.SECURITYGROUPS }}
+      subnets: ${{ secrets.SUBNETS }}
+      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
+      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
+    steps:
+      - run: echo ${{ steps.docker-build.outputs.image-name }}
+        shell: bash
