@@ -27,7 +27,7 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
       - name: Assume new role
-        uses: PROTOTYPE/cicd-actions/.github/actions/change-aws-role@master
+        uses: PROTOTYPE/cicd-actions/.github/actions/change-aws-role@v1.1
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -40,7 +40,7 @@ jobs:
             pip install boto3==1.26.153
         shell: bash
       - name: Push to S3
-        uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@master
+        uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1.1
         with:
           filePath: ${{ github.workspace }}/${{ inputs.project-folder }}/
           s3-url: ${{ env.s3-url }}
