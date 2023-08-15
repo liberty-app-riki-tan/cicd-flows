@@ -79,5 +79,5 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           replace-variables: |
-            {{TAG}}= ${{ env.service-tag }}
+            {{TAG}}=${{ env.service-tag }}
           wait: true
