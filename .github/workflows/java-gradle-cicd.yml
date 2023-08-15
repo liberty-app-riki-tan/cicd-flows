@@ -38,7 +38,9 @@ jobs:
       securityGroups: ${{ secrets.SECURITYGROUPS }}
       subnets: ${{ secrets.SUBNETS }}
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
+      task-definition-file-tag: ${{ secrets.TASK_DEF_FILE_TAG }}
       aws-registry: ${{ secrets.DOCKER_REGISTRY }}
+      hcgs: ${{ secrets.HEALTHCHECKGRACEPERIODSECONDS }}
       service-tag: ${{ inputs.deploy_tag }}
     name: CICD flow of java gradle build
     steps:
@@ -65,6 +67,26 @@ jobs:
         shell: bash
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
+        if: ${{ inputs.deploy_tag != 'normal' }}
+        timeout-minutes: 5
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: ${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.ecs-service }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file-tag }}
+          healthCheckGracePeriodSeconds: ${{ env.hcgs }}
+          replace-variables: |
+            {{TAG}}=${{ env.service-tag }}
+      - name: Deploy Amazon ECS task definition
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
+        if: ${{ inputs.deploy_tag == 'normal' }}
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
@@ -78,7 +100,7 @@ jobs:
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
-          healthCheckGracePeriodSeconds: 90
+          healthCheckGracePeriodSeconds: ${{ env.hcgs }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           wait: true
