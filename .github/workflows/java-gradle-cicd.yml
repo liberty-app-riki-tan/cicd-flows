@@ -39,6 +39,7 @@ jobs:
       subnets: ${{ secrets.SUBNETS }}
       task-definition-file: ${{ secrets.TASK_DEF_FILE }}
       aws-registry: ${{ secrets.DOCKER_REGISTRY }}
+      service-tag: ${{ inputs.deploy_tag }}
     name: CICD flow of java gradle build
     steps:
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
