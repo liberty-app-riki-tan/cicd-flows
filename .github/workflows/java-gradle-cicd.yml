@@ -22,6 +22,9 @@ on:
       deploy-env:
         required: false
         type: string
+      deploy_tag:
+        required: false
+        type: string
 jobs:
   ci:
     runs-on: self-hosted
