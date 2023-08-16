@@ -67,7 +67,7 @@ jobs:
         shell: bash
       - name: Create target group if need
         id: tg-create
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: PROTOTYPE/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
         if: ${{ inputs.deploy_tag != 'normal' }}
         with:
           originalTgArn: ${{ env.targetGroupArn }}
