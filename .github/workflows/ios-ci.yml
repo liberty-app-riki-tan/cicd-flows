@@ -28,4 +28,4 @@ jobs:
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
         packageKey: ios/${{ github.sha }}-${{ github.run_number }}
-        rootUrl: ${{ env.root-url }}
+        rootUrl: https://auto.qafdg.us
