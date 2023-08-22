@@ -31,10 +31,10 @@ jobs:
       run: ./gradlew ${{ env.gradle-cmd }}
       shell: bash
     - name: Push to S3
-      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
+      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1.1
       with:
         filePath: ${{ github.workspace }}/app/build/outputs/apk/qa/debug/
         s3-url: usa-qa-automate-test
         s3-prefix: valkyrie
         packageKey: android/${{ github.sha }}-${{ github.run_number }}
-        rootUrl: ${{ env.root-url }}
+        rootUrl: https://auto.qafdg.us
