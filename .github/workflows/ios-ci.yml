@@ -22,7 +22,7 @@ jobs:
       run: bundle exec fastlane ${{ env.exec-cmd }}
       shell: zsh {0}
     - name: Push to S3
-      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1
+      uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1.1
       with:
         filePath: ${{ github.workspace }}/build/
         s3-url: usa-qa-automate-test
