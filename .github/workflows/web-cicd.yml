@@ -63,6 +63,7 @@ jobs:
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
+          healthCheckGracePeriodSeconds: 0
           environment-variables: |
             process.env.COMMIT_ID=${{ github.sha }}
             process.env.ENV=${{ inputs.deploy-env }}
