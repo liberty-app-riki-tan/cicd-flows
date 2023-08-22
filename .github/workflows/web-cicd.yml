@@ -49,7 +49,7 @@ jobs:
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Deploy Amazon ECS task definition
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
