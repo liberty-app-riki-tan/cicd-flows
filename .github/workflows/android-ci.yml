@@ -15,7 +15,6 @@ jobs:
       name: ${{ inputs.deploy-env }}
     env:
       gradle-cmd: ${{ secrets.GRADLEW_CMD }}
-      root-url: ${{ secrets.ROOT_URL }}
     steps:
     - uses: actions/checkout@v3
     - name: set up JDK
