@@ -65,6 +65,16 @@ jobs:
           aws-registry: ${{ env.aws-registry }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
+      - name: Create target group if need
+        id: tg-create
+        uses: PROTOTYPE/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
+        if: ${{ inputs.deploy_tag != 'normal' }}
+        with:
+          originalTgArn: ${{ env.targetGroupArn }}
+          newTgName: ${{ inputs.ecs-service }}
+      - run: echo ${{ steps.tg-create.outputs.new-tg-arn }}
+        if: ${{ inputs.deploy_tag != 'normal' }}
+        shell: bash
       - name: Deploy Amazon ECS task definition
         uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
         if: ${{ inputs.deploy_tag != 'normal' }}
@@ -77,7 +87,7 @@ jobs:
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.ecs-service }}
           containerPort: ${{ inputs.containerPort }}
-          targetGroupArn: ${{ env.targetGroupArn }}
+          targetGroupArn: ${{ steps.tg-create.outputs.new-tg-arn }}
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file-tag }}
