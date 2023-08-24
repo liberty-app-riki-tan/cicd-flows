@@ -40,12 +40,13 @@ jobs:
           service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@v1
+        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
+          need-del-local-image: true
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Deploy Amazon ECS task definition
