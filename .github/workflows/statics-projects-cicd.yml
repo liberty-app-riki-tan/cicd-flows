@@ -40,7 +40,7 @@ jobs:
             pip install boto3==1.26.153
         shell: bash
       - name: Push to S3
-        uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@v1.1
+        uses: PROTOTYPE/cicd-actions/.github/actions/s3-upload@master
         with:
           filePath: ${{ github.workspace }}/${{ inputs.project-folder }}/
           s3-url: ${{ env.s3-url }}
