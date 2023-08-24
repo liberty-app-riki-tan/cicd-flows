@@ -42,6 +42,7 @@ jobs:
       aws-registry: ${{ secrets.DOCKER_REGISTRY }}
       hcgs: ${{ secrets.HEALTHCHECKGRACEPERIODSECONDS }}
       service-tag: ${{ inputs.deploy_tag }}
+      listenerArn: ${{ secrets.LISTENERARN }}
     name: CICD flow of java gradle build
     steps:
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
@@ -72,6 +73,9 @@ jobs:
         with:
           originalTgArn: ${{ env.targetGroupArn }}
           newTgName: ${{ inputs.ecs-service }}
+          listenerArn:  ${{ env.listenerArn }}
+          headerName: x-gray-env
+          tag: ${{ inputs.deploy_tag }}
       - run: echo ${{ steps.tg-create.outputs.new-tg-arn }}
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
