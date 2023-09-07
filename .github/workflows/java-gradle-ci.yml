@@ -8,7 +8,7 @@ on:
         required: true
         type: number
       project-name:
-        required: true
+        required: false
         type: string
         default: 123
   
