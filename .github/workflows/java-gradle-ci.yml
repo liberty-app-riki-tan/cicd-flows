@@ -10,7 +10,7 @@ on:
       project-name:
         required: false
         type: string
-        default: 123
+        default: ""
   
 jobs:
   ci_build:
