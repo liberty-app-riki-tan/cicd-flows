@@ -48,17 +48,17 @@ jobs:
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
       - name: Code CI build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ci-java-gradle-action@v1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
       - name: Init Config
-        uses: PROTOTYPE/cicd-actions/.github/actions/get-config@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecr-build-push@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -69,7 +69,7 @@ jobs:
         shell: bash
       - name: Create target group if need
         id: tg-create
-        uses: PROTOTYPE/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
         if: ${{ inputs.deploy_tag != 'normal' }}
         with:
           originalTgArn: ${{ env.targetGroupArn }}
@@ -81,7 +81,7 @@ jobs:
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
       - name: Deploy Amazon ECS task definition
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
         if: ${{ inputs.deploy_tag != 'normal' }}
         timeout-minutes: 5
         with:
@@ -100,7 +100,7 @@ jobs:
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
       - name: Deploy Amazon ECS task definition
-        uses: PROTOTYPE/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
         if: ${{ inputs.deploy_tag == 'normal' }}
         timeout-minutes: 5
         with:
