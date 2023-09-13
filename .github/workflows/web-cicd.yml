@@ -60,9 +60,7 @@ jobs:
       - name: Set out put
         id: output
         run: |
-          echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT
-#            echo "::set-output name=image-name::${{ steps.docker-build.outputs.image-name }}"
-            
+          echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT            
       - run: |
             echo ${{ steps.docker-build.outputs.image-name }}
             exit 1
