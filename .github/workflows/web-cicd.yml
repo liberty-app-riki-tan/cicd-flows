@@ -13,6 +13,9 @@ on:
       ecs-service:
         required: false
         type: string
+      docker_arg_list:
+        required: false
+        type: string  
       deploy-env:
         required: false
         type: string
@@ -48,7 +51,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
-          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }}"
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
