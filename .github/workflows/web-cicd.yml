@@ -35,6 +35,7 @@ jobs:
       task-definition-file: ${{ vars.TASK_DEF_FILE }}
       aws-registry: ${{ vars.DOCKER_REGISTRY }}
       env_not_ready: ${{ vars.NOT_READY }}
+      deploy_env: ${{ inputs.deploy-env }}
     name: CICD flow of Web
     steps:
       - uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
@@ -46,7 +47,7 @@ jobs:
         with:
           service-config-name: ${{ inputs.service-config-name }}
       - run: |
-          echo "deploy_env_lowercase=${deploy-env,,}" >>${GITHUB_ENV}
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
