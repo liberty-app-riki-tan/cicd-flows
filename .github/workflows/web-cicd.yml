@@ -57,7 +57,9 @@ jobs:
           aws-registry: ${{ env.aws-registry }}
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
-      - run: echo ${{ steps.docker-build.outputs.image-name }}
+      - run: |
+            echo ${{ steps.docker-build.outputs.image-name }}
+            exit 1
         shell: bash
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
