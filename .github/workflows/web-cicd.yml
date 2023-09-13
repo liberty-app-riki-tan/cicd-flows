@@ -23,14 +23,14 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ secrets.AWS_REGION }}
-      aws-role: ${{ secrets.AWS_ROLE }}
-      cluster: ${{ secrets.ECS_CLUSTER }}
-      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
-      securityGroups: ${{ secrets.SECURITYGROUPS }}
-      subnets: ${{ secrets.SUBNETS }}
-      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
-      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-role: ${{ vars.AWS_ROLE }}
+      cluster: ${{ vars.ECS_CLUSTER }}
+      targetGroupArn: ${{ vars.TARGETGROUPARN }}
+      securityGroups: ${{ vars.SECURITYGROUPS }}
+      subnets: ${{ vars.SUBNETS }}
+      task-definition-file: ${{ vars.TASK_DEF_FILE }}
+      aws-registry: ${{ vars.DOCKER_REGISTRY }}
     name: CICD flow of Web
     steps:
       - uses: actions/checkout@v3
@@ -38,6 +38,8 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+      - run: |
+          echo "deploy_env_lowercase=${deploy-env,,}" >>${GITHUB_ENV}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
@@ -46,6 +48,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
+          docker-build-arg: "APP_ENV=${{ env.deploy_env_lowercase }}"
           need-del-local-image: true
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
