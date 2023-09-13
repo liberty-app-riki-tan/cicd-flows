@@ -31,6 +31,8 @@ jobs:
       aws-registry: ${{ vars.DOCKER_REGISTRY }}
       env_not_ready: ${{ vars.NOT_READY }}
       deploy_env: ${{ inputs.deploy-env }}
+    outputs:
+      image-name: ${{ steps.output.outputs.image-name }}
     name: CI flow of Web
     steps:
       - name: Do health check
@@ -55,6 +57,10 @@ jobs:
           aws-registry: ${{ env.aws-registry }}
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
+      - name: Set out put
+        id: output
+        run: |
+            echo "::set-output name=image-name::${{ steps.docker-build.outputs.image-name }}"
       - run: |
             echo ${{ steps.docker-build.outputs.image-name }}
             exit 1
@@ -84,7 +90,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           ecs-service: ${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
-          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
