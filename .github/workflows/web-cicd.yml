@@ -75,6 +75,7 @@ jobs:
       subnets: ${{ vars.SUBNETS }}
       task-definition-file: ${{ vars.TASK_DEF_FILE }}
       aws-registry: ${{ vars.DOCKER_REGISTRY }}
+      tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow of Web
     steps:
@@ -94,6 +95,7 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
           environment-variables: |
             process.env.COMMIT_ID=${{ github.sha }}
             process.env.ENV=${{ inputs.deploy-env }}
