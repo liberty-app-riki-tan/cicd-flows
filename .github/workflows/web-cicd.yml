@@ -79,7 +79,7 @@ jobs:
     name: CD flow of Web
     steps:
       - name: Deploy Amazon ECS task definition
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
