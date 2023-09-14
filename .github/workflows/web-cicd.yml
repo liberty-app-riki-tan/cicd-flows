@@ -33,7 +33,7 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
-    name: CI flow of Web
+    name: CI flow
     steps:
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
@@ -77,7 +77,7 @@ jobs:
       aws-registry: ${{ vars.DOCKER_REGISTRY }}
       tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
-    name: CD flow of Web
+    name: CD flow
     steps:
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master

@@ -19,21 +19,22 @@ on:
   
 jobs:
   ci_build:
-    runs-on: self-hosted
+    runs-on: [ self-hosted ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ secrets.AWS_REGION }}
-      aws-role: ${{ secrets.AWS_ROLE }}
-      cluster: ${{ secrets.ECS_CLUSTER }}
-      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
-      securityGroups: ${{ secrets.SECURITYGROUPS }}
-      subnets: ${{ secrets.SUBNETS }}
-      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
-      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
-      loadBalancers-json: ${{ secrets.LB_JSON }}
-    name: CICD flow of Web
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-role: ${{ vars.AWS_ROLE }}
+      aws-registry: ${{ vars.DOCKER_REGISTRY }}
+      env_not_ready: ${{ vars.NOT_READY }}
+    outputs:
+      image-name: ${{ steps.output.outputs.image-name }}
+    name: CI flow
     steps:
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
       - uses: actions/checkout@v3
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
@@ -41,23 +42,46 @@ jobs:
           service-config-name: ${{ inputs.service-config-name }}
       - name: Docker build and push
         id: docker-build
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@v1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
+          need-del-local-image: true
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
+      - name: Set out put
+        id: output
+        run: |
+          echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT    
+ 
+  deploy:
+    runs-on: [ self-hosted ]
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-role: ${{ vars.AWS_ROLE }}
+      cluster: ${{ vars.ECS_CLUSTER }}
+      targetGroupArn: ${{ vars.TARGETGROUPARN }}
+      securityGroups: ${{ vars.SECURITYGROUPS }}
+      subnets: ${{ vars.SUBNETS }}
+      task-definition-file: ${{ vars.TASK_DEF_FILE }}
+      aws-registry: ${{ vars.DOCKER_REGISTRY }}
+      loadBalancers-json: ${{ vars.LB_JSON }}
+      tags: ${{ vars.TAGS }}
+    name: CD flow
+    steps:
       - name: Deploy Amazon ECS task definition
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 6
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
           ecs-service: ${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
-          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
@@ -65,4 +89,6 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           loadBalancers-json: ${{ env.loadBalancers-json }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
           wait: true
