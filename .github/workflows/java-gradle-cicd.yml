@@ -43,12 +43,15 @@ jobs:
       hcgs: ${{ secrets.HEALTHCHECKGRACEPERIODSECONDS }}
       service-tag: ${{ inputs.deploy_tag }}
       listenerArn: ${{ secrets.LISTENERARN }}
+      env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of java gradle build
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
-      - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
-        shell: bash
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
       - name: Code CI build
         uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
         with:

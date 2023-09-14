@@ -20,6 +20,7 @@ jobs:
       root-url: ${{ secrets.ROOT_URL }}
       aws-region: ${{ secrets.AWS_REGION }}
       aws-role: ${{ secrets.AWS_ROLE }}
+      env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of node build
     steps:
       - name: Do health check
