@@ -11,7 +11,7 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      exec-cmd: ${{ secrets.EXEC_CMD }}
+      exec-cmd: ${{ vars.EXEC_CMD }}
     steps:
     - uses: actions/checkout@v3
     - name: Bundle Install

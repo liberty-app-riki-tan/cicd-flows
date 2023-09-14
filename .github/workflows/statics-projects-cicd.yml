@@ -16,10 +16,10 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      s3-url: ${{ secrets.S3_URL }}
-      root-url: ${{ secrets.ROOT_URL }}
-      aws-region: ${{ secrets.AWS_REGION }}
-      aws-role: ${{ secrets.AWS_ROLE }}
+      s3-url: ${{ vars.S3_URL }}
+      root-url: ${{ vars.ROOT_URL }}
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-role: ${{ vars.AWS_ROLE }}
       env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of node build
     steps:
@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
       - name: Assume new role
-        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
