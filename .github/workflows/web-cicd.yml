@@ -61,10 +61,6 @@ jobs:
         id: output
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT            
-      - run: |
-            echo ${{ steps.docker-build.outputs.image-name }}
-            exit 1
-        shell: bash
   deploy:
     runs-on: [ self-hosted ]
     needs: ci_build
@@ -82,6 +78,10 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow of Web
     steps:
+      - run: |
+            echo ${{ needs.ci_build.outputs.image-name }}
+            exit 1
+        shell: bash
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
         timeout-minutes: 5
