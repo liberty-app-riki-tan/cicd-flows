@@ -26,8 +26,8 @@ on:
         required: false
         type: string
 jobs:
-  ci:
-    runs-on: self-hosted
+  ci_build:
+    runs-on: [ self-hosted, dev-qa-ci ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
@@ -44,6 +44,8 @@ jobs:
       service-tag: ${{ inputs.deploy_tag }}
       listenerArn: ${{ secrets.LISTENERARN }}
     name: CICD flow of java gradle build
+    outputs:
+      image-name: ${{ steps.output.outputs.image-name }}
     steps:
       - run: echo ${{ env.aws-region }}-${{ env.cluster }}-${{ env.targetGroupArn }}-${{ env.securityGroups }}-${{ env.subnets }}-${{ env.aws-role }}-${{ env.task-definition-file }}
         shell: bash
@@ -65,15 +67,46 @@ jobs:
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
           need-del-local-image: true
-      - run: echo ${{ steps.docker-build.outputs.image-name }}
-        shell: bash
+      - name: Set out put
+        id: output
+        run: |
+          echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT
+  deploy:
+    runs-on: [ self-hosted, dev-qa-cd ]
+    needs: ci_build
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      aws-region: ${{ secrets.AWS_REGION }}
+      aws-role: ${{ secrets.AWS_ROLE }}
+      cluster: ${{ secrets.ECS_CLUSTER }}
+      targetGroupArn: ${{ secrets.TARGETGROUPARN }}
+      securityGroups: ${{ secrets.SECURITYGROUPS }}
+      subnets: ${{ secrets.SUBNETS }}
+      task-definition-file: ${{ secrets.TASK_DEF_FILE }}
+      task-definition-file-tag: ${{ secrets.TASK_DEF_FILE_TAG }}
+      aws-registry: ${{ secrets.DOCKER_REGISTRY }}
+      hcgs: ${{ secrets.HEALTHCHECKGRACEPERIODSECONDS }}
+      service-tag: ${{ inputs.deploy_tag }}
+      listenerArn: ${{ secrets.LISTENERARN }}
+      tags: ${{ vars.TAGS }}
+      deploy_env: ${{ inputs.deploy-env }}
+    name: CICD flow of java gradle build
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
       - name: Create target group if need
         id: tg-create
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
         if: ${{ inputs.deploy_tag != 'normal' }}
         with:
           originalTgArn: ${{ env.targetGroupArn }}
-          newTgName: ${{ inputs.ecs-service }}
+          newTgName: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           listenerArn:  ${{ env.listenerArn }}
           headerName: x-gray-env
           tag: ${{ inputs.deploy_tag }}
@@ -81,41 +114,43 @@ jobs:
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
       - name: Deploy Amazon ECS task definition
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != 'normal' }}
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ inputs.ecs-service }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
-          container-name: ${{ inputs.ecs-service }}
+          container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ steps.tg-create.outputs.new-tg-arn }}
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: ${{ env.hcgs }}
+          tags: ${{ env.tags }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
       - name: Deploy Amazon ECS task definition
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag == 'normal' }}
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ inputs.ecs-service }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
-          image-full-name: ${{ steps.docker-build.outputs.image-name }}
-          container-name: ${{ inputs.ecs-service }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
+          container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: ${{ env.hcgs }}
+          tags: ${{ env.tags }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           wait: true
