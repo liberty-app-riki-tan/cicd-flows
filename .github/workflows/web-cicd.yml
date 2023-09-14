@@ -79,13 +79,16 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow
     steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 5
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ inputs.ecs-service }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ needs.ci_build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
