@@ -22,7 +22,7 @@ on:
   
 jobs:
   ci_build:
-    runs-on: [ self-hosted ]
+    runs-on: [ self-hosted, dev-qa-ci ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT            
   deploy:
-    runs-on: [ self-hosted ]
+    runs-on: [ self-hosted, dev-qa-cd ]
     needs: ci_build
     environment:
       name: ${{ inputs.deploy-env }}
