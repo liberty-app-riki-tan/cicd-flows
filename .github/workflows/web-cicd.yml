@@ -78,10 +78,6 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow of Web
     steps:
-      - run: |
-            echo ${{ needs.ci_build.outputs.image-name }}
-            exit 1
-        shell: bash
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@v1.1
         timeout-minutes: 5
