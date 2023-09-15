@@ -103,6 +103,12 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+      - name: Assume new role
+        if: ${{ inputs.deploy_tag != 'normal' }}
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
       - name: Create target group if need
         id: tg-create
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-targetgroup-create-definition@master
