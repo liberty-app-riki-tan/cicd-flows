@@ -7,6 +7,9 @@ on:
       deploy-env:
         required: false
         type: string
+      target:
+        required: false
+        type: string
 
 jobs:
   build:
@@ -27,13 +30,13 @@ jobs:
       run: chmod +x gradlew
       shell: bash
     - name: Build with Gradle
-      run: ./gradlew ${{ env.gradle-cmd }}
+      run: ./gradlew ${{ inputs.target }}
       shell: bash
     - name: Push to S3
-      uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@v1.1
+      uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
       with:
         filePath: ${{ github.workspace }}/app/build/outputs/apk/qa/debug/
-        s3-url: usa-qa-automate-test
-        s3-prefix: valkyrie
+        s3-url: liberty-dev-app-package
+        s3-prefix: liberty
         packageKey: android/${{ github.sha }}-${{ github.run_number }}
-        rootUrl: https://auto.qafdg.us
+        rootUrl: https://apppackage.dev-wellowallet.com
