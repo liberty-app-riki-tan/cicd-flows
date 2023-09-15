@@ -86,6 +86,11 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 5

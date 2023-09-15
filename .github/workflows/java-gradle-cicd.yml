@@ -104,7 +104,6 @@ jobs:
         with:
           service-config-name: ${{ inputs.service-config-name }}
       - name: Assume new role
-        if: ${{ inputs.deploy_tag != 'normal' }}
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
           aws-region: ${{ env.aws-region }}
