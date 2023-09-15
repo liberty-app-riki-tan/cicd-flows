@@ -130,7 +130,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
-          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
           container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ steps.tg-create.outputs.new-tg-arn }}
