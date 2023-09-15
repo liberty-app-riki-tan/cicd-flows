@@ -32,6 +32,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew ${{ inputs.target }}
       shell: bash
+    - name: Change local profile
+      run: export AWS_PROFILE=new-pack
+      shell: bash
     - name: Push to S3
       uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
       with:
