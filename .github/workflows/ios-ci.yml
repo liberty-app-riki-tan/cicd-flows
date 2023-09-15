@@ -24,7 +24,8 @@ jobs:
       run: bundle exec fastlane ${{ inputs.target }}
       shell: zsh {0}
     - name: Change local profile
-      run: export AWS_PROFILE=new-pack
+      run: |
+        export AWS_PROFILE=new-pack
       shell: bash
     - name: Push to S3
       uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
