@@ -44,7 +44,7 @@ jobs:
       service-tag: ${{ inputs.deploy_tag }}
       listenerArn: ${{ vars.LISTENERARN }}
       env_not_ready: ${{ vars.NOT_READY }}
-    name: CICD flow of java gradle build
+    name: CI flow
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
@@ -94,7 +94,7 @@ jobs:
       listenerArn: ${{ vars.LISTENERARN }}
       tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
-    name: CICD flow of java gradle build
+    name: CD flow
     steps:
       - name: Transfer env to lowercase
         run: |
