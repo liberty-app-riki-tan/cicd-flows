@@ -29,13 +29,10 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
       shell: bash
-    - name: Build with Gradle
-      run: ./gradlew ${{ inputs.target }}
-      shell: bash
     - name: Push to S3
       uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
       with:
-        filePath: ${{ github.workspace }}/app/build/outputs/apk/qa/debug/
+        filePath: ${{ github.workspace }}/app/build/outputs/apk/
         s3-url: liberty-dev-app-package
         s3-prefix: liberty
         packageKey: android/${{ github.sha }}-${{ github.run_number }}
