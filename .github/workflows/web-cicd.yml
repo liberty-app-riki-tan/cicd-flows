@@ -106,7 +106,7 @@ jobs:
           ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-${{ env.service-tag }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ needs.ci_build.outputs.image-name }}
-          container-name: ${{ inputs.containerName }}
+          container-name: ${{ inputs.containerName }}-${{ env.service-tag }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           securityGroups: ${{ env.securityGroups }}
