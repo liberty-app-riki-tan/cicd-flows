@@ -19,6 +19,9 @@ on:
       deploy-env:
         required: false
         type: string
+      deploy_tag:
+        required: false
+        type: string
   
 jobs:
   ci_build:
@@ -74,9 +77,11 @@ jobs:
       securityGroups: ${{ vars.SECURITYGROUPS }}
       subnets: ${{ vars.SUBNETS }}
       task-definition-file: ${{ vars.TASK_DEF_FILE }}
+      task-definition-file-tag: ${{ vars.TASK_DEF_FILE_TAG }}
       aws-registry: ${{ vars.DOCKER_REGISTRY }}
       tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
+      service-tag: ${{ inputs.deploy_tag }}
     name: CD flow
     steps:
       - name: Transfer env to lowercase
@@ -91,9 +96,34 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
+      - name: Deploy Amazon ECS task definition with tag
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ inputs.deploy_tag != '' && inputs.deploy_tag != null && inputs.deploy_tag != 'normal' }}
+        timeout-minutes: 8
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file-tag }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
+          replace-variables: |
+            {{TAG}}=${{ env.service-tag }}
+          environment-variables: |
+            process.env.COMMIT_ID=${{ github.sha }}
+            process.env.ENV=${{ inputs.deploy-env }}
+          wait: true
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
-        timeout-minutes: 5
+        if: ${{ inputs.deploy_tag == '' || inputs.deploy_tag == null || inputs.deploy_tag == 'normal' }}
+        timeout-minutes: 8
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
