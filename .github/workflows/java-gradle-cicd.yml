@@ -124,7 +124,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != 'normal' }}
-        timeout-minutes: 5
+        timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -139,12 +139,13 @@ jobs:
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: ${{ env.hcgs }}
           tags: ${{ env.tags }}
+          wait-for-minutes: 6
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag == 'normal' }}
-        timeout-minutes: 5
+        timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -159,6 +160,7 @@ jobs:
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: ${{ env.hcgs }}
           tags: ${{ env.tags }}
+          wait-for-minutes: 6
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           wait: true

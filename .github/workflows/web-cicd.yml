@@ -99,7 +99,7 @@ jobs:
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != '' && inputs.deploy_tag != null && inputs.deploy_tag != 'normal' }}
-        timeout-minutes: 8
+        timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -113,6 +113,7 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: 0
+          wait-for-minutes: 8
           tags: ${{ env.tags }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
@@ -123,7 +124,7 @@ jobs:
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag == '' || inputs.deploy_tag == null || inputs.deploy_tag == 'normal' }}
-        timeout-minutes: 8
+        timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -138,6 +139,7 @@ jobs:
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: 0
           tags: ${{ env.tags }}
+          wait-for-minutes: 8
           environment-variables: |
             process.env.COMMIT_ID=${{ github.sha }}
             process.env.ENV=${{ inputs.deploy-env }}

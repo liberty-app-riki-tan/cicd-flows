@@ -89,7 +89,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
-        timeout-minutes: 6
+        timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
@@ -104,5 +104,6 @@ jobs:
           task-definition-file: ${{ env.task-definition-file }}
           loadBalancers-json: ${{ env.loadBalancers-json }}
           healthCheckGracePeriodSeconds: 0
+          wait-for-minutes: 6
           tags: ${{ env.tags }}
           wait: true
