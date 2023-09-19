@@ -31,3 +31,4 @@ jobs:
         s3-prefix: liberty
         packageKey: ios/${{ github.sha }}-${{ github.run_number }}
         rootUrl: https://apppackage.dev-wellowallet.com
+        need-change-profile: true
