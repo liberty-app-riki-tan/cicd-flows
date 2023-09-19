@@ -52,3 +52,4 @@ jobs:
           s3-prefix: NA
           packageKey: NA
           rootUrl: ${{ env.root-url }}
+          need-change-profile: false
