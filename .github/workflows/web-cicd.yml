@@ -71,7 +71,7 @@ jobs:
     runs-on: [ self-hosted, dev-qa-cd ]
     needs: ci_build
     environment:
-      name: ${{ inputs.deploy-env }}
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
     env:
       aws-region: ${{ vars.AWS_REGION }}
       aws-role: ${{ vars.AWS_ROLE }}
