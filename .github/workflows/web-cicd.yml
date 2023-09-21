@@ -22,12 +22,15 @@ on:
       deploy_tag:
         required: false
         type: string
+      env-tag:
+        required: false
+        type: string
   
 jobs:
   ci_build:
     runs-on: [ self-hosted, dev-qa-ci ]
     environment:
-      name: ${{ inputs.deploy-env }}
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
     env:
       aws-role: ${{ vars.AWS_ROLE }}
       aws-region: ${{ vars.AWS_REGION }}
