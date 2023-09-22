@@ -50,6 +50,7 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
@@ -98,6 +99,7 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
       - name: Assume new role
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
