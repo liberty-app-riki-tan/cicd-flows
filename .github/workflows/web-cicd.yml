@@ -90,6 +90,10 @@ jobs:
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Add tag for tags
+        run: |
+          echo "tags_with_tag=${tags/<TAG>/-${{ env.service-tag }}}" >>${GITHUB_ENV}
+          echo "tags_without_tag=${tags/<TAG>/}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
@@ -117,7 +121,7 @@ jobs:
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: 0
           wait-for-minutes: 8
-          tags: ${{ env.tags }}
+          tags: ${{ env.tags_with_tag }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           environment-variables: |
@@ -141,7 +145,7 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: 0
-          tags: ${{ env.tags }}
+          tags: ${{ env.tags_without_tag }}
           wait-for-minutes: 8
           environment-variables: |
             process.env.COMMIT_ID=${{ github.sha }}
