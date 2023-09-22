@@ -90,6 +90,8 @@ jobs:
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Add tag for tags
+        run: |
           echo "tags_with_tag=${tags/{{TAG}}/\${{ env.service-tag }}}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
