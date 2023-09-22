@@ -42,20 +42,20 @@ jobs:
     name: CI flow
     steps:
       - uses: actions/checkout@v3
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
           config-file: env-config-service.yml
-          deploy-env: ${{ inputs.deploy-env }}
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
           env_not_ready: ${{ env.env_not_ready }}
-      - name: Transfer env to lowercase
-        run: |
-          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
@@ -90,16 +90,16 @@ jobs:
       service-tag: ${{ inputs.deploy_tag }}
     name: CD flow
     steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
           config-file: env-config-service.yml
-          deploy-env: ${{ inputs.deploy-env }}
-      - name: Transfer env to lowercase
-        run: |
-          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Add tag for tags
         run: |
           echo "tags_with_tag=${tags/<TAG>/-${{ env.service-tag }}}" >>${GITHUB_ENV}
