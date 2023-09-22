@@ -31,37 +31,31 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      cluster: ${{ vars.ECS_CLUSTER }}
-      targetGroupArn: ${{ vars.TARGETGROUPARN }}
-      securityGroups: ${{ vars.SECURITYGROUPS }}
-      subnets: ${{ vars.SUBNETS }}
-      task-definition-file: ${{ vars.TASK_DEF_FILE }}
-      task-definition-file-tag: ${{ vars.TASK_DEF_FILE_TAG }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      hcgs: ${{ vars.HEALTHCHECKGRACEPERIODSECONDS }}
       service-tag: ${{ inputs.deploy_tag }}
-      listenerArn: ${{ vars.LISTENERARN }}
-      env_not_ready: ${{ vars.NOT_READY }}
+      deploy_env: ${{ inputs.deploy-env }}
     name: CI flow
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
-      - name: Do health check
-        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
-        with:
-          env_not_ready: ${{ env.env_not_ready }}
       - name: Code CI build
         uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
@@ -81,19 +75,7 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      cluster: ${{ vars.ECS_CLUSTER }}
-      targetGroupArn: ${{ vars.TARGETGROUPARN }}
-      securityGroups: ${{ vars.SECURITYGROUPS }}
-      subnets: ${{ vars.SUBNETS }}
-      task-definition-file: ${{ vars.TASK_DEF_FILE }}
-      task-definition-file-tag: ${{ vars.TASK_DEF_FILE_TAG }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      hcgs: ${{ vars.HEALTHCHECKGRACEPERIODSECONDS }}
       service-tag: ${{ inputs.deploy_tag }}
-      listenerArn: ${{ vars.LISTENERARN }}
-      tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow
     steps:
@@ -105,6 +87,8 @@ jobs:
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Assume new role
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
