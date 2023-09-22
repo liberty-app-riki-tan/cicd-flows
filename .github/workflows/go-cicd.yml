@@ -23,24 +23,26 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      env_not_ready: ${{ vars.NOT_READY }}
+      deploy_env: ${{ inputs.deploy-env }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     name: CI flow
     steps:
-      - name: Do health check
-        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
-        with:
-          env_not_ready: ${{ env.env_not_ready }}
       - uses: actions/checkout@v3
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
         uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
@@ -63,16 +65,6 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      cluster: ${{ vars.ECS_CLUSTER }}
-      targetGroupArn: ${{ vars.TARGETGROUPARN }}
-      securityGroups: ${{ vars.SECURITYGROUPS }}
-      subnets: ${{ vars.SUBNETS }}
-      task-definition-file: ${{ vars.TASK_DEF_FILE }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      loadBalancers-json: ${{ vars.LB_JSON }}
-      tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
     name: CD flow
     steps:
@@ -84,6 +76,8 @@ jobs:
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Assume new role
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
