@@ -32,10 +32,6 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
     env:
-      aws-role: ${{ vars.AWS_ROLE }}
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      env_not_ready: ${{ vars.NOT_READY }}
       deploy_env: ${{ inputs.deploy-env }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
@@ -76,16 +72,6 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
     env:
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      cluster: ${{ vars.ECS_CLUSTER }}
-      targetGroupArn: ${{ vars.TARGETGROUPARN }}
-      securityGroups: ${{ vars.SECURITYGROUPS }}
-      subnets: ${{ vars.SUBNETS }}
-      task-definition-file: ${{ vars.TASK_DEF_FILE }}
-      task-definition-file-tag: ${{ vars.TASK_DEF_FILE_TAG }}
-      aws-registry: ${{ vars.DOCKER_REGISTRY }}
-      tags: ${{ vars.TAGS }}
       deploy_env: ${{ inputs.deploy-env }}
       service-tag: ${{ inputs.deploy_tag }}
     name: CD flow
