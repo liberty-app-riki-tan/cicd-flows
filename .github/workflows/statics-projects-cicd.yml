@@ -10,6 +10,12 @@ on:
       deploy-env:
         required: false
         type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
 jobs:
   ci:
     runs-on: self-hosted
@@ -23,13 +29,17 @@ jobs:
       env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of node build
     steps:
-      - uses: actions/checkout@v3
+      - uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
           env_not_ready: ${{ env.env_not_ready }}
       - name: Code CI build
-        uses: liberty-group-tech/cicd-actions/.github/actions/node-ci-action@v1
+        uses: liberty-group-tech/cicd-actions/.github/actions/node-ci-action@master
         with:
           node-version: ${{ inputs.node-version }}
       - name: Assume new role

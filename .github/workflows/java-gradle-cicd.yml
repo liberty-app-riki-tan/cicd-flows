@@ -25,6 +25,12 @@ on:
       deploy_tag:
         required: false
         type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
 jobs:
   ci_build:
     runs-on: [ self-hosted, dev-qa-ci ]
@@ -37,7 +43,11 @@ jobs:
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
