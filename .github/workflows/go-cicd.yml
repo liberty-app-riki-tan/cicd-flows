@@ -34,7 +34,8 @@ jobs:
       image-name: ${{ steps.output.outputs.image-name }}
     name: CI flow
     steps:
-      - uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
         with:
           repo-name: ${{ inputs.repo-name }}
           token: ${{ secrets.REPO_T }}

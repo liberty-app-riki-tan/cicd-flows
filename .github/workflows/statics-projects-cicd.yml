@@ -29,7 +29,8 @@ jobs:
       env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of node build
     steps:
-      - uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
         with:
           repo-name: ${{ inputs.repo-name }}
           token: ${{ secrets.REPO_T }}
