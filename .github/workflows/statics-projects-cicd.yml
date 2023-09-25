@@ -23,6 +23,7 @@ jobs:
       env_not_ready: ${{ vars.NOT_READY }}
     name: CICD flow of node build
     steps:
+      - uses: actions/checkout@v3
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
