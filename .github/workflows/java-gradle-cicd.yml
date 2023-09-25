@@ -37,11 +37,7 @@ jobs:
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
-      - name: Code CI build
-        uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
-        with:
-          java-version: ${{ inputs.java-version }}
-          jar-path: ${{ inputs.jar-path }}
+      - uses: actions/checkout@v3
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
@@ -56,6 +52,11 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
           env_not_ready: ${{ env.env_not_ready }}
+      - name: Code CI build
+        uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
+        with:
+          java-version: ${{ inputs.java-version }}
+          jar-path: ${{ inputs.jar-path }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
