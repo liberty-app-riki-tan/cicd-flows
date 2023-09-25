@@ -63,7 +63,7 @@ jobs:
         with:
           env_not_ready: ${{ env.env_not_ready }}
       - name: Code CI build
-        uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@v1
+        uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@master
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
