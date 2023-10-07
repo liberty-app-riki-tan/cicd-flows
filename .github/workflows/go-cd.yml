@@ -1,0 +1,73 @@
+on:
+  workflow_call:
+    inputs:
+      service-config-name:
+        required: true
+        type: string
+      containerName:
+        required: false
+        type: string
+      containerPort:
+        required: false
+        type: string
+      ecs-service:
+        required: false
+        type: string
+      deploy-env:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      image-name:
+        required: false
+        type: string
+  
+jobs:
+  deploy:
+    runs-on: [ self-hosted, dev-qa-cd ]
+    needs: ci_build
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+    name: CD flow
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Deploy Amazon ECS task definition
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ inputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file }}
+          loadBalancers-json: ${{ env.loadBalancers-json }}
+          healthCheckGracePeriodSeconds: 0
+          wait-for-minutes: 6
+          tags: ${{ env.tags }}
+          wait: true
