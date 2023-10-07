@@ -29,7 +29,6 @@ on:
 jobs:
   deploy:
     runs-on: [ self-hosted, dev-qa-cd ]
-    needs: ci_build
     environment:
       name: ${{ inputs.deploy-env }}
     env:
