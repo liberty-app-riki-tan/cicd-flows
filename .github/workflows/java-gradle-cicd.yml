@@ -119,7 +119,7 @@ jobs:
       - run: echo ${{ steps.tg-create.outputs.new-tg-arn }}
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
-      - name: Deploy Amazon ECS task definition
+      - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != 'normal' }}
         timeout-minutes: 10
