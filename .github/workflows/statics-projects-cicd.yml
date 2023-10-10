@@ -22,11 +22,7 @@ jobs:
     environment:
       name: ${{ inputs.deploy-env }}
     env:
-      s3-url: ${{ vars.S3_URL }}
-      root-url: ${{ vars.ROOT_URL }}
-      aws-region: ${{ vars.AWS_REGION }}
-      aws-role: ${{ vars.AWS_ROLE }}
-      env_not_ready: ${{ vars.NOT_READY }}
+      deploy_env: ${{ inputs.deploy-env }}
     name: CICD flow of node build
     steps:
       - name: Get code
@@ -35,6 +31,16 @@ jobs:
           repo-name: ${{ inputs.repo-name }}
           token: ${{ secrets.REPO_T }}
           branch: ${{ inputs.branch }}
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
