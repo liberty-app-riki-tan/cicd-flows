@@ -1,0 +1,76 @@
+on:
+  workflow_call:
+    inputs:
+      project-folder:
+        required: true
+        type: string
+      service-config-name:
+        required: true
+        type: string
+      node-version:
+        required: true
+        type: number
+      deploy-env:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+jobs:
+  ci:
+    runs-on: self-hosted
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+    name: CICD flow of node build
+    steps:
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
+      - name: Code CI build
+        uses: liberty-group-tech/cicd-actions/.github/actions/node-ci-action@master
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: install package
+        run: |
+            pip install boto3==1.26.153
+        shell: bash
+      - name: Push to S3
+        uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
+        with:
+          filePath: ${{ github.workspace }}/${{ inputs.project-folder }}/
+          s3-url: ${{ env.s3-url }}
+          s3-prefix: NA
+          packageKey: NA
+          rootUrl: ${{ env.root-url }}
+          need-change-profile: false

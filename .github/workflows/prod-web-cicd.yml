@@ -1,0 +1,156 @@
+on:
+  workflow_call:
+    inputs:
+      service-config-name:
+        required: true
+        type: string
+      containerName:
+        required: false
+        type: string
+      containerPort:
+        required: false
+        type: string
+      ecs-service:
+        required: false
+        type: string
+      docker_arg_list:
+        required: false
+        type: string  
+      deploy-env:
+        required: false
+        type: string
+      deploy_tag:
+        required: false
+        type: string
+      env-tag:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+  
+jobs:
+  ci_build:
+    runs-on: [ self-hosted, dev-qa-ci ]
+    environment:
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+    outputs:
+      image-name: ${{ steps.output.outputs.image-name }}
+    name: CI flow
+    steps:
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
+      - name: Docker build and push
+        id: docker-build
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
+          need-del-local-image: true
+      - name: Set out put
+        id: output
+        run: |
+          echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT            
+  deploy:
+    runs-on: [ self-hosted, dev-qa-cd ]
+    needs: ci_build
+    environment:
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      service-tag: ${{ inputs.deploy_tag }}
+    name: CD flow
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Add tag for tags
+        run: |
+          echo "tags_with_tag=${tags/<TAG>/-${{ env.service-tag }}}" >>${GITHUB_ENV}
+          echo "tags_without_tag=${tags/<TAG>/}" >>${GITHUB_ENV}
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Deploy Amazon ECS task definition with tag
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ inputs.deploy_tag != '' && inputs.deploy_tag != null && inputs.deploy_tag != 'normal' }}
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-${{ env.service-tag }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}-${{ env.service-tag }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file-tag }}
+          healthCheckGracePeriodSeconds: 0
+          wait-for-minutes: 8
+          tags: ${{ env.tags_with_tag }}
+          replace-variables: |
+            {{TAG}}=${{ env.service-tag }}
+          environment-variables: |
+            process.env.COMMIT_ID=${{ github.sha }}
+            process.env.ENV=${{ inputs.deploy-env }}
+          wait: true
+      - name: Deploy Amazon ECS task definition
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ inputs.deploy_tag == '' || inputs.deploy_tag == null || inputs.deploy_tag == 'normal' }}
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ needs.ci_build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags_without_tag }}
+          wait-for-minutes: 8
+          environment-variables: |
+            process.env.COMMIT_ID=${{ github.sha }}
+            process.env.ENV=${{ inputs.deploy-env }}
+          wait: true
