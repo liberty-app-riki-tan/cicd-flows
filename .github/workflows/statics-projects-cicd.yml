@@ -4,6 +4,9 @@ on:
       project-folder:
         required: true
         type: string
+      service-config-name:
+        required: true
+        type: string
       node-version:
         required: true
         type: number
