@@ -71,7 +71,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
-          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} --build-arg COMMIT_ID=${{ github.sha }} ${{ inputs.docker_arg_list }}"
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} --build-arg COMMIT_ID=${{ env.env-commit-sha }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
       - name: Set out put
         id: output
@@ -127,9 +127,6 @@ jobs:
           tags: ${{ env.tags_with_tag }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
-          environment-variables: |
-            process.env.COMMIT_ID=${{ github.sha }}
-            process.env.ENV=${{ inputs.deploy-env }}
           wait: true
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
@@ -150,7 +147,4 @@ jobs:
           healthCheckGracePeriodSeconds: 0
           tags: ${{ env.tags_without_tag }}
           wait-for-minutes: 8
-          environment-variables: |
-            process.env.COMMIT_ID=${{ github.sha }}
-            process.env.ENV=${{ inputs.deploy-env }}
           wait: true
