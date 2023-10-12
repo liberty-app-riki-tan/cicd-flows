@@ -124,7 +124,7 @@ jobs:
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
       - name: Update service count if need
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-service-update-count@master
         if: ${{ inputs.update-desired-count != -1 }}
         timeout-minutes: 10
         with:
