@@ -131,7 +131,7 @@ jobs:
           ecs-cluster: ${{ env.cluster }}
           wait-for-service-stability: true
           wait-for-minutes: 5
-          desiredCount: 1
+          desiredCount: ${{ inputs.update-desired-count }}
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != 'normal' }}
