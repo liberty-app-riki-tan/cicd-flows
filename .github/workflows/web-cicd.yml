@@ -71,7 +71,7 @@ jobs:
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
-          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} --build-arg COMMIT_ID=${{ github.sha }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
       - name: Set out put
         id: output
