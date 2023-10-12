@@ -128,8 +128,8 @@ jobs:
         if: ${{ inputs.update-desired-count != -1 }}
         timeout-minutes: 10
         with:
-          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
-          ecs-cluster: ${{ env.cluster }}
+          service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          cluster: ${{ env.cluster }}
           wait-for-service-stability: true
           wait-for-minutes: 5
           desiredCount: ${{ inputs.update-desired-count }}
