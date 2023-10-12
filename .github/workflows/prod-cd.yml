@@ -64,7 +64,7 @@ jobs:
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: ${{ env.healthCheckGracePeriodSeconds }}
           wait-for-minutes: ${{ env.wait-for-minutes }}
-          tags: ${{ env.tags_with_tag }}
+          tags: ${{ env.tags }}
           replace-variables: ｜
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}

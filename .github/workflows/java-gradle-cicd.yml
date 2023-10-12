@@ -31,6 +31,9 @@ on:
       branch:
         required: false
         type: string
+      update-desired-count:
+        required: false
+        type: number
 jobs:
   ci_build:
     runs-on: [ self-hosted, dev-qa-ci ]
@@ -119,6 +122,16 @@ jobs:
       - run: echo ${{ steps.tg-create.outputs.new-tg-arn }}
         if: ${{ inputs.deploy_tag != 'normal' }}
         shell: bash
+      - name: Update service count if need
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ inputs.update-desired-count != null && inputs.update-desired-count != '' && inputs.update-desired-count != -1 }}
+        timeout-minutes: 10
+        with:
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          wait-for-service-stability: true
+          wait-for-minutes: 5
+          desiredCount: 1
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != 'normal' }}
@@ -140,6 +153,7 @@ jobs:
           wait-for-minutes: 5
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
+          wait: true
       - name: Deploy Amazon ECS task definition
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag == 'normal' }}

@@ -21,7 +21,7 @@ on:
         type: string
 jobs:
   ci:
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod-cd]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
