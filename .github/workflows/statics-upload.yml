@@ -26,7 +26,7 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
       aws-region: ${{ vars.AWS_REGION }}
       aws-role: ${{ vars.AWS_ROLE }}
-      s3-url: ${{ vars.s3-url }}
+      s3-url: ${{ vars.S3_URL }}
     name: CICD flow of node build
     steps:
       - name: Get code
