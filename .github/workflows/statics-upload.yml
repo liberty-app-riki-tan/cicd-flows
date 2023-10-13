@@ -27,7 +27,7 @@ jobs:
       aws-region: ${{ vars.AWS_REGION }}
       aws-role: ${{ vars.AWS_ROLE }}
       s3-url: ${{ vars.S3_URL }}
-    name: CICD flow of node build
+    name: Static Files Upload
     steps:
       - name: Get code
         uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
