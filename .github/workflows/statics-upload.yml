@@ -1,0 +1,59 @@
+on:
+  workflow_call:
+    inputs:
+      project-folder:
+        required: false
+        type: string
+      deploy-env:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      s3-prefix:
+        required: false
+        type: string
+        default: NA
+jobs:
+  ci:
+    runs-on: self-hosted
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      aws-region: ${{ vars.AWS_REGION }}
+      aws-role: ${{ vars.AWS_ROLE }}
+      s3-url: ${{ vars.s3-url }}
+    name: CICD flow of node build
+    steps:
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: install package
+        run: |
+            pip install boto3==1.26.153
+        shell: bash
+      - name: Push to S3
+        uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
+        with:
+          filePath: ${{ github.workspace }}${{ inputs.project-folder }}/
+          s3-url: ${{ env.s3-url }}
+          s3-prefix: ${{ inputs.s3-prefix }}
+          packageKey: NA
+          rootUrl: ${{ env.s3-url }}
+          need-change-profile: false
