@@ -27,6 +27,7 @@ jobs:
       aws-region: ${{ vars.AWS_REGION }}
       aws-role: ${{ vars.AWS_ROLE }}
       s3-url: ${{ vars.S3_URL }}
+      distribution-id: ${{ vars.DISTRIBUTION_ID }}
     name: Static Files Upload
     steps:
       - name: Get code
@@ -57,3 +58,4 @@ jobs:
           packageKey: NA
           rootUrl: ${{ env.s3-url }}
           need-change-profile: false
+          distribution-id: ${{ env.distribution-id }}
