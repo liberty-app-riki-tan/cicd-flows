@@ -74,11 +74,6 @@ jobs:
           aws-registry: ${{ env.aws-registry }}
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
-      - name: Assume new role
-        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
-        with:
-          aws-region: ${{ env.aws-region }}
-          aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.deploy_tag != '' && inputs.deploy_tag != null && inputs.deploy_tag != 'normal' }}
