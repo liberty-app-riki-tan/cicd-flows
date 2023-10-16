@@ -93,7 +93,7 @@ jobs:
           task-definition-file: ${{ env.task-definition-file-tag }}
           healthCheckGracePeriodSeconds: 0
           wait-for-minutes: 8
-          tags: ${{ env.tags_with_tag }}
+          tags: ${{ env.tags }}
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           wait: true
@@ -114,6 +114,6 @@ jobs:
           subnets: ${{ env.subnets }}
           task-definition-file: ${{ env.task-definition-file }}
           healthCheckGracePeriodSeconds: 0
-          tags: ${{ env.tags_with_tag }}
+          tags: ${{ env.tags }}
           wait-for-minutes: 8
           wait: true
