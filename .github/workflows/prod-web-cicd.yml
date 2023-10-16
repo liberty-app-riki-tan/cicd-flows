@@ -73,6 +73,7 @@ jobs:
           aws-registry: ${{ env.aws-registry }}
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
+          env-commit-sha: ${{ env.env-commit-sha }}
       - name: Set out put
         id: output
         run: |
@@ -128,7 +129,6 @@ jobs:
           replace-variables: |
             {{TAG}}=${{ env.service-tag }}
           environment-variables: |
-            process.env.COMMIT_ID=${{ github.sha }}
             process.env.ENV=${{ inputs.deploy-env }}
           wait: true
       - name: Deploy Amazon ECS task definition
@@ -151,6 +151,5 @@ jobs:
           tags: ${{ env.tags_without_tag }}
           wait-for-minutes: 8
           environment-variables: |
-            process.env.COMMIT_ID=${{ github.sha }}
             process.env.ENV=${{ inputs.deploy-env }}
           wait: true

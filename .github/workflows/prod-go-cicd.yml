@@ -63,6 +63,7 @@ jobs:
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
           need-del-local-image: true
+          env-commit-sha: ${{ env.env-commit-sha }}
       - run: echo ${{ steps.docker-build.outputs.image-name }}
         shell: bash
       - name: Set out put
