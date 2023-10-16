@@ -42,7 +42,7 @@ jobs:
       service-tag: ${{ inputs.deploy_tag }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
-    name: CI flow
+    name: CI&CD flow
     steps:
       - name: Get code
         uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
