@@ -119,7 +119,7 @@ jobs:
   blue_deploy:
     name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
-    if: ${{ (success() || (failure() && needs.gray_deploy.deploy.conclusion == 'skipped')) && !inputs.skip-blue }}
+    if: ${{ success() && !inputs.skip-blue }}
     secrets: inherit
     needs: [image_confirm, gray_deploy]
     with:
@@ -131,7 +131,7 @@ jobs:
       containerPort: ${{ inputs.containerPort }}
   prod_deploy:
     name: Prod Deploy
-    if: ${{ success() || (failure() && needs.gray_deploy.deploy.conclusion == 'skipped') }}
+    if: ${{ success() }}
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     secrets: inherit
     needs: [image_confirm, blue_deploy]
