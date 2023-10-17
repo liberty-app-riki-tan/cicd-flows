@@ -69,6 +69,7 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
         with:
           aws-region: ${{ env.aws-region }}
+          aws-tools-region: ${{ env.aws-tools-region }}
           aws-role: ${{ env.aws-role }}
           project-name: ${{ inputs.containerName }}
           aws-registry: ${{ env.aws-registry }}
