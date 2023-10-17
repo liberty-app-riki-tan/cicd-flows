@@ -52,15 +52,6 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-      - name: Update service count if need
-        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-service-update-count@master
-        timeout-minutes: 5
-        with:
-          service: wello-prod-aggregator-normal
-          cluster: ${{ env.cluster }}
-          wait-for-service-stability: true
-          wait-for-minutes: 5
-          desiredCount: 0
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 15
