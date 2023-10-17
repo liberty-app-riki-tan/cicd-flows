@@ -117,6 +117,7 @@ jobs:
       deploy_tag: gray
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: gray
+      containerPort: ${{ inputs.containerPort }}
   blue_deploy:
     name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
@@ -129,6 +130,7 @@ jobs:
       deploy_tag: blue
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: blue
+      containerPort: ${{ inputs.containerPort }}
   prod_deploy:
     name: Prod Deploy
     if: ${{ always() }}
@@ -141,3 +143,4 @@ jobs:
       deploy_tag: normal
       image-name: 105942427545.dkr.ecr.eu-central-1.amazonaws.com/aggregator:0861b3a0a9b73196a88219c21520e0ece4347e9a-deploy-31
       deploy_sub_env: prod
+      containerPort: ${{ inputs.containerPort }}

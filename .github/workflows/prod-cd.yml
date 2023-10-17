@@ -22,6 +22,9 @@ on:
       deploy_sub_env:
         required: true
         type: string
+      containerPort:
+        required: false
+        type: string
   
 jobs:
   deploy:
