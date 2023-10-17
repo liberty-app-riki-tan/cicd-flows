@@ -107,7 +107,7 @@ jobs:
   blue_deploy:
     name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
-    if: ${{ inputs.skip-blue == 'false' }}
+    if: ${{ always() && inputs.skip-blue == 'false' }}
     secrets: inherit
     needs: gray_deploy
     with:
@@ -118,6 +118,7 @@ jobs:
       deploy_sub_env: blue
   prod_deploy:
     name: Prod Deploy
+    if: ${{ always() }}
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     secrets: inherit
     needs: blue_deploy
