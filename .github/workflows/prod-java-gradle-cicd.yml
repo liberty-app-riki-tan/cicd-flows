@@ -92,6 +92,7 @@ jobs:
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT
   gray_deploy:
+    name: Gray Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     if: ${{ inputs.skip-gray == 'false' }}
     secrets: inherit
@@ -103,6 +104,7 @@ jobs:
       image-name: ${{ needs.ci_build.outputs.image-name }}
       deploy_sub_env: gray
   blue_deploy:
+    name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     if: ${{ inputs.skip-blue == 'false' }}
     secrets: inherit
@@ -114,6 +116,7 @@ jobs:
       image-name: ${{ needs.ci_build.outputs.image-name }}
       deploy_sub_env: blue
   prod_deploy:
+    name: Prod Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     secrets: inherit
     needs: blue_deploy
