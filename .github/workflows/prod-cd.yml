@@ -31,7 +31,7 @@ jobs:
     env:
       deploy_env: ${{ inputs.deploy-env }}
       service-tag: ${{ inputs.deploy_tag }}
-    name: CD flow
+    name: ${{ inputs.deploy_sub_env }} CD flow
     steps:
       - name: Transfer env to lowercase
         run: |
