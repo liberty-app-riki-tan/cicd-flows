@@ -104,8 +104,8 @@ jobs:
   blue_deploy:
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
     if: ${{ inputs.skip-blue == 'false' }}
-    secrets: gray_deploy
-    needs: ci_build
+    secrets: inherit
+    needs: gray_deploy
     with:
       service-config-name: ${{ inputs.service-config-name }}
       deploy-env: ${{ inputs.deploy_env }}
