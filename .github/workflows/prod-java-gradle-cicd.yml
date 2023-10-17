@@ -31,6 +31,14 @@ on:
       branch:
         required: false
         type: string
+      skip-gray:
+        required: false
+        type: boolean
+        default: false
+      skip-blue:
+        required: false
+        type: boolean
+        default: false
 jobs:
   ci_build:
     runs-on: [ self-hosted, dev-qa-ci ]
@@ -82,3 +90,35 @@ jobs:
         id: output
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT
+  gray_deploy:
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    if: ${{ inputs.skip-gray == 'false' }}
+    secrets: inherit
+    needs: ci_build
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_tag: gray
+      image-name: ${{ needs.ci_build.outputs.image-name }}
+      deploy_sub_env: gray
+  blue_deploy:
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    if: ${{ inputs.skip-blue == 'false' }}
+    secrets: gray_deploy
+    needs: ci_build
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_tag: blue
+      image-name: ${{ needs.ci_build.outputs.image-name }}
+      deploy_sub_env: blue
+  prod_deploy:
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    secrets: inherit
+    needs: blue_deploy
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_tag: normal
+      image-name: ${{ needs.ci_build.outputs.image-name }}
+      deploy_sub_env: prod

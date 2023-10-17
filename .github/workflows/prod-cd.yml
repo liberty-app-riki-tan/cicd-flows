@@ -5,10 +5,10 @@ on:
         required: true
         type: string
       deploy-env:
-        required: false
+        required: true
         type: string
       deploy_tag:
-        required: false
+        required: true
         type: string
       image-name:
         required: false
@@ -19,10 +19,13 @@ on:
       environment-variables:
         required: false
         type: string
+      deploy_sub_env:
+        required: true
+        type: string
   
 jobs:
   deploy:
-    runs-on: [ self-hosted, prod-cd ]
+    runs-on: [ self-hosted ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
@@ -40,6 +43,7 @@ jobs:
           token: ${{ secrets.REPO_T }}
           config-file: env-config-prod-service.yml
           deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: ${{ inputs.deploy_sub_env }}
       - name: Assume new role
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
@@ -47,28 +51,30 @@ jobs:
           aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition with tag
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
-        if: ${{ inputs.deploy_tag != '' && inputs.deploy_tag != null && inputs.deploy_tag != 'normal' }}
         timeout-minutes: 15
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ env.ecs-service }}-${{ env.service-tag }}
+          ecs-service: ${{ env.deploy_env_lowercase }}-prod-${{ env.ecs-service }}-${{ env.service-tag }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ inputs.image-name }}
-          container-name: ${{ env.containerName }}
-          containerPort: ${{ env.containerPort }}
+          container-name: ${{ env.deploy_env_lowercase }}-prod-${{ env.ecs-service }}
+          containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           loadBalancers-json: ${{ env.loadBalancers-json }}
           securityGroups: ${{ env.securityGroups }}
           subnets: ${{ env.subnets }}
-          task-definition-file: ${{ env.task-definition-file-tag }}
-          healthCheckGracePeriodSeconds: ${{ env.healthCheckGracePeriodSeconds }}
+          task-definition-file: ${{ env.task-definition-file }}
+          healthCheckGracePeriodSeconds: ${{ env.hcgs }}
           wait-for-minutes: ${{ env.wait-for-minutes }}
           tags: ${{ env.tags }}
           replace-variables: ｜
+            {{TAG}}=${{ inputs.deploy_sub_env }}
+            {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           environment-variables: ｜
+            APP_NAME=${{ env.ecs-service }}
             ${{ env.environment-variables }}
             ${{ inputs.environment-variables }}
           wait: true
