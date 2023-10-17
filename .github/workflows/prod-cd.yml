@@ -55,7 +55,7 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ env.deploy_env_lowercase }}-prod-${{ env.ecs-service }}-${{ env.service-tag }}
+          ecs-service: ${{ env.task-service-name }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ inputs.image-name }}
           container-name: ${{ env.deploy_env_lowercase }}-prod-${{ env.ecs-service }}
