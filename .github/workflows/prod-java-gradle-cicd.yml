@@ -61,12 +61,13 @@ jobs:
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
-        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
-          config-file: env-config-service.yml
+          config-file: env-config-prod-service.yml
           deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: prod
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
