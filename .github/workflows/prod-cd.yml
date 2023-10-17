@@ -55,10 +55,10 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ env.task-service-name }}
+          ecs-service: ${{ env.deploy_env_lowercase }}-${{ env.ecs-service }}-${{ env.service-tag }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ inputs.image-name }}
-          container-name: ${{ env.deploy_env_lowercase }}-prod-${{ env.ecs-service }}
+          container-name: ${{ env.deploy_env_lowercase }}-${{ env.ecs-service }}-${{ env.service-tag }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           loadBalancers-json: ${{ env.loadBalancers-json }}
