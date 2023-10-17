@@ -68,12 +68,12 @@ jobs:
           healthCheckGracePeriodSeconds: ${{ env.hcgs }}
           wait-for-minutes: ${{ env.wait-for-minutes }}
           tags: ${{ env.tags }}
-          replace-variables: ｜
+          replace-variables: |
             {{TAG}}=${{ env.service-tag }}
             {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
-          environment-variables: ｜
+          environment-variables: |
             APP_NAME=${{ env.ecs-service }}
             ${{ env.environment-variables }}
             ${{ inputs.environment-variables }}

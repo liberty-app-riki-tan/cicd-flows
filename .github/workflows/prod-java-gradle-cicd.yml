@@ -94,7 +94,7 @@ jobs:
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT
   image_confirm:
-    if: ${{ always() }}
+    if: ${{ 1 == 2 }}
     runs-on: [ self-hosted ]
     needs: ci_build
     name: Image Confirm
@@ -104,7 +104,7 @@ jobs:
       - name: Set out put
         id: output
         run: |
-          echo "image-name=105942427545.dkr.ecr.eu-central-1.amazonaws.com/aggregator:0861b3a0a9b73196a88219c21520e0ece4347e9a-deploy-31" >> $GITHUB_OUTPUT
+          echo "image-name=${{ needs.ci_build.outputs.image-name }}" >> $GITHUB_OUTPUT
   gray_deploy:
     name: Gray Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
@@ -139,5 +139,5 @@ jobs:
       service-config-name: ${{ inputs.service-config-name }}
       deploy-env: ${{ inputs.deploy_env }}
       deploy_tag: normal
-      image-name: ${{ needs.image_confirm.outputs.image-name }}
+      image-name: 105942427545.dkr.ecr.eu-central-1.amazonaws.com/aggregator:0861b3a0a9b73196a88219c21520e0ece4347e9a-deploy-31
       deploy_sub_env: prod
