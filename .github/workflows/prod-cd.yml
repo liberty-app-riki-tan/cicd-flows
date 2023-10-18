@@ -32,6 +32,10 @@ on:
         required: false
         type: boolean
         default: false
+      update-desired-count:
+        required: false
+        type: number
+        default: -1
   
 jobs:
   deploy:
@@ -62,6 +66,16 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
+      - name: Update service count if need
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-service-update-count@master
+        if: ${{ inputs.update-desired-count != -1 }}
+        timeout-minutes: 10
+        with:
+          service: ${{ env.deploy_env_lowercase }}-${{ env.ecs-service }}-${{ env.service-tag }}
+          cluster: ${{ env.cluster }}
+          wait-for-service-stability: true
+          wait-for-minutes: 5
+          desiredCount: ${{ inputs.update-desired-count }}
       - name: Deploy Amazon ECS task definition with tag
         if: ${{ !env.need-skip || env.need-skip == 'false' }}
         id: deploy

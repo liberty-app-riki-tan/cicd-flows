@@ -39,6 +39,10 @@ on:
         required: false
         type: boolean
         default: false
+      update-desired-count:
+        required: false
+        type: number
+        default: -1
 jobs:
   ci_build:
     runs-on: [ self-hosted ]
@@ -116,6 +120,7 @@ jobs:
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: gray
       containerPort: ${{ inputs.containerPort }}
+      update-desired-count: ${{ inputs.update-desired-count }}
   blue_deploy:
     name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
@@ -129,6 +134,7 @@ jobs:
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: blue
       containerPort: ${{ inputs.containerPort }}
+      update-desired-count: ${{ inputs.update-desired-count }}
   prod_deploy:
     name: Prod Deploy
     if: ${{ !failure() && !cancelled() }}
@@ -142,3 +148,4 @@ jobs:
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: prod
       containerPort: ${{ inputs.containerPort }}
+      update-desired-count: ${{ inputs.update-desired-count }}
