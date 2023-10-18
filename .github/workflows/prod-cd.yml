@@ -53,13 +53,13 @@ jobs:
           deploy-env: ${{ env.deploy_env_lowercase }}
           deploy-sub-env: ${{ inputs.deploy_sub_env }}
       - name: Assume new role
-        if: ${{ !env.need-skip }}
+        if: ${{ !env.need-skip || env.need-skip == 'false' }}
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition with tag
-        if: ${{ !env.need-skip }}
+        if: ${{ !env.need-skip || env.need-skip == 'false' }}
         id: deploy
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 15
