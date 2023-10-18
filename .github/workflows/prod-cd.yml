@@ -84,6 +84,8 @@ jobs:
             {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
             {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
             {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           environment-variables: |
