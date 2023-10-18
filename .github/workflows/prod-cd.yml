@@ -25,6 +25,10 @@ on:
       containerPort:
         required: false
         type: string
+      need-skip:
+        required: false
+        type: boolean
+        default: false
   
 jobs:
   deploy:
@@ -34,6 +38,7 @@ jobs:
     env:
       deploy_env: ${{ inputs.deploy-env }}
       service-tag: ${{ inputs.deploy_tag }}
+      need-skip: ${{ inputs.need-skip }}
     name: ${{ inputs.deploy_sub_env }} CD flow
     steps:
       - name: Transfer env to lowercase
@@ -48,11 +53,13 @@ jobs:
           deploy-env: ${{ env.deploy_env_lowercase }}
           deploy-sub-env: ${{ inputs.deploy_sub_env }}
       - name: Assume new role
+        if: ${{ !env.need-skip }}
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
       - name: Deploy Amazon ECS task definition with tag
+        if: ${{ !env.need-skip }}
         id: deploy
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         timeout-minutes: 15
