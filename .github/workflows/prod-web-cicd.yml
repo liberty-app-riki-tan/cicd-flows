@@ -43,6 +43,7 @@ jobs:
       name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
     env:
       deploy_env: ${{ inputs.deploy-env }}
+      origin_deploy_tag: ${{ inputs.deploy_tag }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     name: CI flow
@@ -108,6 +109,7 @@ jobs:
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: pre-prod
       containerPort: ${{ inputs.containerPort }}
+      origin_deploy_tag: ${{ inputs.deploy_tag }}
   prod_deploy:
     name: Prod Deploy
     if: ${{ !failure() && !cancelled() }}
@@ -121,3 +123,4 @@ jobs:
       image-name: ${{ needs.image_confirm.outputs.image-name }}
       deploy_sub_env: prod
       containerPort: ${{ inputs.containerPort }}
+      origin_deploy_tag: ${{ inputs.deploy_tag }}

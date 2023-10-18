@@ -25,6 +25,9 @@ on:
       containerPort:
         required: false
         type: string
+      origin_deploy_tag:
+        required: false
+        type: string
       need-skip:
         required: false
         type: boolean
@@ -39,6 +42,7 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
       service-tag: ${{ inputs.deploy_tag }}
       need-skip: ${{ inputs.need-skip }}
+      origin_deploy_tag: ${{ inputs.origin_deploy_tag }}
     name: ${{ inputs.deploy_sub_env }} CD flow
     steps:
       - name: Transfer env to lowercase
