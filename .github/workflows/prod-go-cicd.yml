@@ -44,12 +44,13 @@ jobs:
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
       - name: Init Config
-        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
         with:
           service-config-name: ${{ inputs.service-config-name }}
           token: ${{ secrets.REPO_T }}
-          config-file: env-config-service.yml
+          config-file: env-config-prod-service.yml
           deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: prod
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
@@ -71,48 +72,16 @@ jobs:
         id: output
         run: |
           echo "image-name=${{ steps.docker-build.outputs.image-name }}" >> $GITHUB_OUTPUT    
- 
-  deploy:
-    runs-on: [ self-hosted, dev-qa-cd ]
-    needs: ci_build
-    environment:
-      name: ${{ inputs.deploy-env }}
-    env:
-      deploy_env: ${{ inputs.deploy-env }}
-    name: CD flow
-    steps:
-      - name: Transfer env to lowercase
-        run: |
-          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
-      - name: Init Config
-        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
-        with:
-          service-config-name: ${{ inputs.service-config-name }}
-          token: ${{ secrets.REPO_T }}
-          config-file: env-config-service.yml
-          deploy-env: ${{ env.deploy_env_lowercase }}
-      - name: Assume new role
-        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
-        with:
-          aws-region: ${{ env.aws-region }}
-          aws-role: ${{ env.aws-role }}
-      - name: Deploy Amazon ECS task definition
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
-        timeout-minutes: 10
-        with:
-          aws-region: ${{ env.aws-region }}
-          aws-role: ${{ env.aws-role }}
-          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
-          ecs-cluster: ${{ env.cluster }}
-          image-full-name: ${{ needs.ci_build.outputs.image-name }}
-          container-name: ${{ inputs.containerName }}
-          containerPort: ${{ inputs.containerPort }}
-          targetGroupArn: ${{ env.targetGroupArn }}
-          securityGroups: ${{ env.securityGroups }}
-          subnets: ${{ env.subnets }}
-          task-definition-file: ${{ env.task-definition-file }}
-          loadBalancers-json: ${{ env.loadBalancers-json }}
-          healthCheckGracePeriodSeconds: 0
-          wait-for-minutes: 6
-          tags: ${{ env.tags }}
-          wait: true
+  prod_deploy:
+    name: Prod Deploy
+    if: ${{ !failure() && !cancelled() }}
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    secrets: inherit
+    needs: [ci_build]
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_tag: normal
+      image-name: ${{ needs.ci_build.outputs.image-name }}
+      deploy_sub_env: prod
+      containerPort: ${{ inputs.containerPort }}
