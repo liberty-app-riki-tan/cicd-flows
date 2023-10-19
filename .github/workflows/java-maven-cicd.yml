@@ -41,6 +41,9 @@ on:
       maven-param:
         required: false
         type: string
+      cp-jar-cmd:
+        required: false
+        type: string
 jobs:
   ci_build:
     runs-on: [ self-hosted, mvn ]
@@ -87,6 +90,10 @@ jobs:
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
           cp ${{ inputs.dockerfile-path }} Dockerfile
+      - name: Copy jar
+        if: ${{ inputs.cp-jar-cmd != '' }}
+        run: |
+          ${{ inputs.cp-jar-cmd }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
