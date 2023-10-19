@@ -60,6 +60,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Set env for local repo
+        run: |
+          echo "env-commit-sha=${{ github.sha }}" >>${GITHUB_ENV}
+        shell: bash
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
