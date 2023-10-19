@@ -79,7 +79,7 @@ jobs:
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
-          mvn -e clean package
+          /scripts/build.sh
       - name: Copy dockerfile
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
