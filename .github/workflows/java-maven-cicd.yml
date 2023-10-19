@@ -40,7 +40,7 @@ on:
         default: -1
 jobs:
   ci_build:
-    runs-on: [ self-hosted, dev-qa-ci ]
+    runs-on: [ self-hosted, mvn ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
@@ -75,9 +75,10 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
-          cache: maven
       - name: Build with Maven
-        run: mvn package
+        run: |
+          export M2_HOME=/home/ssm-user/apache-maven-3.8.8
+          mvn package
       - name: Copy dockerfile
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
