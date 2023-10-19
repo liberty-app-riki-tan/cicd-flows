@@ -41,6 +41,9 @@ on:
 jobs:
   ci_build:
     runs-on: [ self-hosted, mvn ]
+    strategy:
+      matrix:
+        java: [ '8', '11', '17' ]
     environment:
       name: ${{ inputs.deploy-env }}
     env:
@@ -73,11 +76,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: |
-            8
-            11
-            17
-          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          distribution: '<distribution>'
       - name: Build with Maven
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
