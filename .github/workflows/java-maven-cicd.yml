@@ -56,12 +56,10 @@ jobs:
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
-      - name: Get code
-        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+      - name: Checkout local repo
+        uses: actions/checkout@v3
         with:
-          repo-name: ${{ inputs.repo-name }}
-          token: ${{ secrets.REPO_T }}
-          branch: ${{ inputs.branch }}
+          fetch-depth: 0
       - name: Transfer env to lowercase
         run: |
           echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
@@ -85,7 +83,7 @@ jobs:
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
-          echo "mvn dependency:purge-local-repository"
+          echo "mvn dependency:purge-local-repository -DactTransitively=false"
           mvn -e clean package -Dmaven.test.skip=true -U ${{ inputs.maven-param }}
       - name: Copy dockerfile
         if: ${{ inputs.dockerfile-path != '' }}
