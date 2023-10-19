@@ -79,7 +79,7 @@ jobs:
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
-          mvn -e clean package -DskipTests=true -U
+          mvn -e clean package -Dmaven.test.skip=true -U
       - name: Copy dockerfile
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
