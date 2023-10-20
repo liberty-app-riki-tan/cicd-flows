@@ -121,6 +121,17 @@ jobs:
       deploy_sub_env: gray
       containerPort: ${{ inputs.containerPort }}
       update-desired-count: ${{ inputs.update-desired-count }}
+  gray_rollback:
+    name: Gray Rollback
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    if: ${{ !inputs.skip-gray && (failure() || cancelled()) && needs.gray_deploy.outputs.last-task-definition-arn != '' }}
+    secrets: inherit
+    needs: gray_deploy
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_sub_env: gray
+      task-definition-arn: ${{ needs.gray_deploy.outputs.last-task-definition-arn }}
   blue_deploy:
     name: Blue Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
@@ -135,6 +146,17 @@ jobs:
       deploy_sub_env: blue
       containerPort: ${{ inputs.containerPort }}
       update-desired-count: ${{ inputs.update-desired-count }}
+  blue_rollback:
+    name: Gray Rollback
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
+    if: ${{ !inputs.skip-blue && (failure() || cancelled()) && needs.blue_deploy.outputs.last-task-definition-arn != '' }}
+    secrets: inherit
+    needs: blue_deploy
+    with:
+      service-config-name: ${{ inputs.service-config-name }}
+      deploy-env: ${{ inputs.deploy_env }}
+      deploy_sub_env: gray
+      task-definition-arn: ${{ needs.blue_deploy.outputs.last-task-definition-arn }}
   prod_deploy:
     name: Prod Deploy
     if: ${{ !failure() && !cancelled() }}

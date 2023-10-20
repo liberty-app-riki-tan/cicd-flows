@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      service-config-name:
+        required: true
+        type: string
+      deploy-env:
+        required: true
+        type: string
+      deploy_sub_env:
+        required: true
+        type: string
+      task-definition-arn:
+        required: true
+        type: string
+      need-skip:
+        required: false
+        type: boolean
+        default: false
+  
+jobs:
+  deploy:
+    runs-on: [ self-hosted ]
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      need-skip: ${{ inputs.need-skip }}
+    name: ${{ inputs.deploy_sub_env }} rollback flow
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-prod-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: ${{ inputs.deploy_sub_env }}
+      - name: Assume new role
+        if: ${{ !env.need-skip || env.need-skip == 'false' }}
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Rollback service
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-service-update-task-definition@master
+        timeout-minutes: 10
+        with:
+          service: ${{ env.deploy_env_lowercase }}-${{ env.ecs-service }}-${{ env.service-tag }}
+          cluster: ${{ env.cluster }}
+          wait-for-service-stability: true
+          wait-for-minutes: 5
+          task-def: ${{ inputs.task-definition-arn }}

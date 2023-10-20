@@ -47,6 +47,8 @@ jobs:
       service-tag: ${{ inputs.deploy_tag }}
       need-skip: ${{ inputs.need-skip }}
       origin_deploy_tag: ${{ inputs.origin_deploy_tag }}
+    outputs:
+      last-task-definition-arn: ${{ steps.output.outputs.last-task-definition-arn }}
     name: ${{ inputs.deploy_sub_env }} CD flow
     steps:
       - name: Transfer env to lowercase
@@ -111,3 +113,7 @@ jobs:
             ${{ env.environment-variables }}
             ${{ inputs.environment-variables }}
           wait: true
+      - name: Set out put
+        id: output
+        run: |
+          echo "last-task-definition-arn=${{ steps.deploy.outputs.last-task-definition-arn }}" >> $GITHUB_OUTPUT
