@@ -53,7 +53,7 @@ jobs:
     env:
       service-tag: ${{ inputs.deploy_tag }}
       deploy_env: ${{ inputs.deploy-env }}
-    name: CI flow
+    name: CI&CD flow
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     steps:
