@@ -44,10 +44,7 @@ on:
       cp-jar-cmd:
         required: false
         type: string
-      node-version:
-        required: false
-        type: number
-        default: -1
+
 jobs:
   ci_build:
     runs-on: [ self-hosted, mvn ]
@@ -87,11 +84,6 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
-      - name: Set node ${{ inputs.node-version }}
-        if: ${{ inputs.node-version != -1 }}
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
       - name: Build with Maven
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
