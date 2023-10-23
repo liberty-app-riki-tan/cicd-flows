@@ -123,7 +123,7 @@ jobs:
       update-desired-count: ${{ inputs.update-desired-count }}
   gray_rollback:
     name: Gray Rollback
-    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-rollback.ymll@master
+    uses: liberty-group-tech/cicd-flows/.github/workflows/prod-rollback.yml@master
     if: ${{ !inputs.skip-gray && (failure() || cancelled()) && needs.gray_deploy.outputs.last-task-definition-arn != '' }}
     secrets: inherit
     needs: gray_deploy
