@@ -47,6 +47,9 @@ on:
       pom-file-path:
         required: false
         type: string
+      config-xml-path:
+        required: false
+        type: string
 
 jobs:
   ci_build:
@@ -92,7 +95,7 @@ jobs:
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
           echo "mvn dependency:purge-local-repository -DactTransitively=false"
-          mvn -e clean package -Dmaven.test.skip=true -U ${{ inputs.maven-param }} ${{ inputs.pom-file-path }}
+          mvn -e clean package -Dmaven.test.skip=true -U ${{ inputs.maven-param }} ${{ inputs.config-xml-path }} ${{ inputs.pom-file-path }}
       - name: Copy dockerfile
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
