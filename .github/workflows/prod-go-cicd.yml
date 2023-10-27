@@ -55,6 +55,7 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
           env_not_ready: ${{ env.env_not_ready }}
+          deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
