@@ -148,7 +148,7 @@ jobs:
       containerPort: ${{ inputs.containerPort }}
       update-desired-count: ${{ inputs.update-desired-count }}
   blue_rollback:
-    name: Gray Rollback
+    name: Blue Rollback
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-rollback.yml@master
     if: ${{ !inputs.skip-blue && (failure() || cancelled()) && needs.blue_deploy.outputs.last-task-definition-arn != '' }}
     secrets: inherit
