@@ -74,3 +74,4 @@ jobs:
           packageKey: NA
           rootUrl: ${{ env.root-url }}
           need-change-profile: false
+          distribution-id: ${{ env.distribution-id }}
