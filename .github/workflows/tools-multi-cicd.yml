@@ -113,7 +113,7 @@ jobs:
           healthCheckGracePeriodSeconds: 0
           tags: ${{ env.tags }}
           wait-for-minutes: 8
-          serviceRegistries: '[{"registryArn": "${{ env.serviceRegistries }}"}]'
+          serviceRegistries: '[{"registryArn": "${{ env.serviceRegistry }}"}]'
           replace-variables: |
             {{SERVICE_NAME}}=${{ inputs.ecs-service }}
             {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
@@ -142,7 +142,7 @@ jobs:
           healthCheckGracePeriodSeconds: 0
           tags: ${{ env.tags }}
           wait-for-minutes: 8
-          serviceRegistries: '[{"registryArn": "${{ env.serviceRegistries }}"}]'
+          serviceRegistries: '[{"registryArn": "${{ env.serviceRegistry }}"}]'
           replace-variables: |
             {{SERVICE_NAME}}=${{ inputs.ecs-service }}
             {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
