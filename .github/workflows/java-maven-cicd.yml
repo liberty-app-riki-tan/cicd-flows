@@ -86,6 +86,7 @@ jobs:
         with:
           env_not_ready: ${{ env.env_not_ready }}
           deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
+          skip: false
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:

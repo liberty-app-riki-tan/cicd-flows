@@ -68,6 +68,7 @@ jobs:
         with:
           env_not_ready: ${{ env.env_not_ready }}
           deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
+          skip: false
       - name: Code CI build
         uses: liberty-group-tech/cicd-actions/.github/actions/ci-java-gradle-action@master
         with:
