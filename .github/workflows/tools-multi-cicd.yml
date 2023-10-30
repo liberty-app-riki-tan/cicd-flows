@@ -46,6 +46,7 @@ jobs:
     env:
       deploy_env: ${{ inputs.deploy-env }}
       service-tag: ${{ inputs.deploy_tag }}
+      origin_service_name: ${{ inputs.multi-service-name }}
     outputs:
       image-name: ${{ steps.output.outputs.image-name }}
     name: CI&CD flow
@@ -92,6 +93,7 @@ jobs:
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
           env-commit-sha: ${{ env.env-commit-sha }}
+          add-reg-name: ${{ inputs.multi-service-name }}
       - name: Deploy Amazon ECS task definition for local config
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ inputs.local-config-path != '' && inputs.local-config-path != null }}
