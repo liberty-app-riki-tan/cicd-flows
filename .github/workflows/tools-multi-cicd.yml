@@ -72,8 +72,9 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-local-config@master
         with:
           local-config-path: ${{ inputs.local-config-path }}
-          deploy-env: ${{ inputs.multi-service-name }}
-          deploy-sub-env: ${{ env.deploy_env_lowercase }}
+          config-file: local-env-config.yml
+          deploy-sub-env: ${{ inputs.multi-service-name }}
+          deploy-env: ${{ env.deploy_env_lowercase }}
       - name: Do health check
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
@@ -113,10 +114,12 @@ jobs:
           tags: ${{ env.tags }}
           wait-for-minutes: 8
           replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
             {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
             {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
             {{LOG_GROUP}}=${{ env.log-group }}
             {{AWS_REGION}}=${{ env.aws-region }}
+            {{REGISTRY_ARN}}=${{ env.serviceRegistry }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           wait: true
@@ -140,11 +143,13 @@ jobs:
           tags: ${{ env.tags }}
           wait-for-minutes: 8
           replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
             {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
             {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
             {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
             {{LOG_GROUP}}=${{ env.log-group }}
             {{AWS_REGION}}=${{ env.aws-region }}
+            {{REGISTRY_ARN}}=${{ env.serviceRegistry }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           wait: true
