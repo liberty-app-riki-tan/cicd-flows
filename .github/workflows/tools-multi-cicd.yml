@@ -93,14 +93,41 @@ jobs:
           need-del-local-image: true
           env-commit-sha: ${{ env.env-commit-sha }}
           add-reg-name: ${{ inputs.multi-service-name }}
-      - name: Deploy Amazon ECS task definition for local config
+      - name: Deploy Amazon ECS task definition for none prod
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
-        if: ${{ inputs.local-config-path != '' && inputs.local-config-path != null }}
+        if: ${{ !contains(env.deploy_env_lowercase, 'prod') }}
         timeout-minutes: 10
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
           ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.task-definition-file }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
+          wait-for-minutes: 8
+          replace-variables: |
+            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
+            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
+            ${{ env.replace-variables }}
+            ${{ inputs.replace-variables }}
+          wait: true
+      - name: Deploy Amazon ECS task definition for prod
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ contains(env.deploy_env_lowercase, 'prod') }}
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
