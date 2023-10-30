@@ -72,7 +72,6 @@ jobs:
         uses: liberty-group-tech/cicd-actions/.github/actions/get-local-config@master
         with:
           local-config-path: ${{ inputs.local-config-path }}
-          config-file: local-env-config.yml
           deploy-env: ${{ inputs.multi-service-name }}
           deploy-sub-env: ${{ env.deploy_env_lowercase }}
       - name: Do health check
