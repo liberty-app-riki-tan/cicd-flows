@@ -32,7 +32,7 @@ on:
         required: false
         type: string
       local-config-path:
-        required: false
+        required: true
         type: string
       multi-service-name:
         required: false
