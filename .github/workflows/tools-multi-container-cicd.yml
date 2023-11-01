@@ -102,14 +102,6 @@ jobs:
           task-definition: 2-${{ env.task-definition-file }}
           container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
-          replace-variables: |
-            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
-            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
-            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
-            {{LOG_GROUP}}=${{ env.log-group }}
-            {{AWS_REGION}}=${{ env.aws-region }}
-            ${{ env.replace-variables }}
-            ${{ inputs.replace-variables }}
       - name: add amd show task description none prod-2
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
@@ -124,14 +116,6 @@ jobs:
           task-definition: 2-${{ env.task-definition-file }}
           container-name: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
-          replace-variables: |
-            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
-            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
-            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
-            {{LOG_GROUP}}=${{ env.log-group }}
-            {{AWS_REGION}}=${{ env.aws-region }}
-            ${{ env.replace-variables }}
-            ${{ inputs.replace-variables }}
       - name: add amd show task description prod-2
         if: ${{ contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
