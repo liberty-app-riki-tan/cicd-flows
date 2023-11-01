@@ -142,7 +142,7 @@ jobs:
           echo "multi-task-definition-file=${{ steps.task-def-2-prod.outputs.task-definition }}" >>${GITHUB_ENV}
           cat ${{ steps.task-def-2-prod.outputs.task-definition }}
         shell: bash
-      - name: Assume new role
+      - name: Assume tools role if need
         if: ${{ !contains(env.deploy_env_lowercase, 'tools') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
         with:
