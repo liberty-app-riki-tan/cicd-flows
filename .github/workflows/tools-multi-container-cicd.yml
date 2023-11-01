@@ -128,6 +128,7 @@ jobs:
           image: ${{ steps.docker-build-2.outputs.image-name }}
           replace-variables: |
             {{SERVICE_NAME}}=${{ inputs.ecs-service }}
+            {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
             {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
             {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
             {{LOG_GROUP}}=${{ env.log-group }}
