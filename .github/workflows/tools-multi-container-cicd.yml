@@ -81,10 +81,10 @@ jobs:
           env_not_ready: ${{ env.env_not_ready }}
           deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
           skip: false
-      - name: Docker build and push-2
+      - name: Docker build-2
         if: ${{ env.multi-task-definition-file == null || env.multi-task-definition-file == '' }}
         id: docker-build-2
-        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-only@master
         with:
           aws-region: ${{ env.aws-region }}
           aws-tools-region: ${{ env.aws-tools-region }}
@@ -173,6 +173,16 @@ jobs:
           need-del-local-image: true
           env-commit-sha: ${{ env.env-commit-sha }}
           add-reg-name: pri-${{ inputs.multi-service-name }}
+      - name: Docker push-2
+        if: ${{ steps.docker-build-2.outputs.image-name != null && steps.docker-build-2.outputs.image-name != '' }}
+        id: docker-build-2
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-push-only@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-tools-region: ${{ env.aws-tools-region }}
+          aws-role: ${{ env.aws-role }}
+          need-del-local-image: true
+          image: ${{ steps.docker-build-2.outputs.image-name }}
       - name: Deploy Amazon ECS task definition for none prod
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') }}
