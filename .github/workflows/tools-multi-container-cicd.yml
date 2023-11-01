@@ -100,7 +100,6 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-region: ${{ env.aws-tools-region }}
-          role-to-assume: ${{ env.aws-tools-role }}
       - name: Fill in the new image ID in the Amazon ECS task definition none prod-2
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         id: task-def-2-none-prod
