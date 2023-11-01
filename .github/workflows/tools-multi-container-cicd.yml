@@ -142,6 +142,12 @@ jobs:
           echo "multi-task-definition-file=${{ steps.task-def-2-prod.outputs.task-definition }}" >>${GITHUB_ENV}
           cat ${{ steps.task-def-2-prod.outputs.task-definition }}
         shell: bash
+      - name: Assume new role
+        if: ${{ !contains(env.deploy_env_lowercase, 'tools') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-tools-region }}
+          aws-role: ${{ env.aws-tools-role }}
       - name: Init Local Config
         if: ${{ inputs.local-config-path != '' && inputs.local-config-path != null }}
         uses: liberty-group-tech/cicd-actions/.github/actions/get-local-config@master
