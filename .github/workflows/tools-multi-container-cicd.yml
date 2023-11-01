@@ -99,7 +99,7 @@ jobs:
         id: task-def-2-none-prod
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
         with:
-          task-definition: ${{ env.task-definition-file }}-2
+          task-definition: 2-${{ env.task-definition-file }}
           container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
           replace-variables: |
@@ -121,7 +121,7 @@ jobs:
         id: task-def-2-prod
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
         with:
-          task-definition: ${{ env.task-definition-file }}-2
+          task-definition: 2-${{ env.task-definition-file }}
           container-name: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
           replace-variables: |
