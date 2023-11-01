@@ -110,6 +110,7 @@ jobs:
             {{AWS_REGION}}=${{ env.aws-region }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
+          need-replace: false
       - name: add amd show task description none prod-2
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
@@ -132,6 +133,7 @@ jobs:
             {{AWS_REGION}}=${{ env.aws-region }}
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
+          need-replace: false
       - name: add amd show task description prod-2
         if: ${{ contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
