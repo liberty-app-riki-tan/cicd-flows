@@ -1,0 +1,224 @@
+on:
+  workflow_call:
+    inputs:
+      service-config-name:
+        required: true
+        type: string
+      containerName:
+        required: false
+        type: string
+      containerPort:
+        required: false
+        type: string
+      ecs-service:
+        required: false
+        type: string
+      docker_arg_list:
+        required: false
+        type: string  
+      deploy-env:
+        required: false
+        type: string
+      deploy_tag:
+        required: false
+        type: string
+      env-tag:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      local-config-path:
+        required: true
+        type: string
+      multi-service-name:
+        required: false
+        type: string
+  
+jobs:
+  ci_build:
+    runs-on: [ self-hosted ]
+    environment:
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      service-tag: ${{ inputs.deploy_tag }}
+      origin_service_name: ${{ inputs.multi-service-name }}
+    outputs:
+      image-name: ${{ steps.output.outputs.image-name }}
+    name: CI&CD flow
+    steps:
+      - name: Get code
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-code@master
+        with:
+          repo-name: ${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          branch: ${{ inputs.branch }}
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Init Local Config-2
+        if: ${{ inputs.local-config-path != '' && inputs.local-config-path != null }}
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-local-config@master
+        with:
+          local-config-path: ${{ inputs.local-config-path }}/2
+          deploy-sub-env: ${{ inputs.multi-service-name }}
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check-2
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
+          deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
+          skip: false
+      - name: Docker build and push-2
+        if: ${{ env.multi-task-definition-file == null || env.multi-task-definition-file == '' }}
+        id: docker-build-2
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-tools-region: ${{ env.aws-tools-region }}
+          aws-role: ${{ env.aws-role }}
+          project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
+          need-del-local-image: true
+          env-commit-sha: ${{ env.env-commit-sha }}
+          add-reg-name: ${{ inputs.multi-service-name }}
+      - name: Fill in the new image ID in the Amazon ECS task definition none prod-2
+        if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
+        id: task-def-2-none-prod
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
+        with:
+          task-definition: ${{ env.task-definition-file }}
+          container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          image: ${{ steps.docker-build-2.outputs.image-name }}
+          replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
+            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
+            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
+            ${{ env.replace-variables }}
+            ${{ inputs.replace-variables }}
+      - name: add amd show task description none prod-2
+        if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
+        run: |
+          echo "multi-task-definition-file=${{ steps.task-def-2-none-prod.outputs.task-definition }}" >>${GITHUB_ENV}
+          cat ${{ steps.task-def-2-none-prod.outputs.task-definition }}
+        shell: bash
+      - name: Fill in the new image ID in the Amazon ECS task definition prod-2
+        if: ${{ contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
+        id: task-def-2-prod
+        uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
+        with:
+          task-definition: ${{ env.task-definition-file }}
+          container-name: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          image: ${{ steps.docker-build-2.outputs.image-name }}
+          replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
+            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
+            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
+            ${{ env.replace-variables }}
+            ${{ inputs.replace-variables }}
+      - name: add amd show task description prod-2
+        if: ${{ contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
+        run: |
+          echo "multi-task-definition-file=${{ steps.task-def-2-prod.outputs.task-definition }}" >>${GITHUB_ENV}
+          cat ${{ steps.task-def-2-prod.outputs.task-definition }}
+        shell: bash
+      - name: Init Local Config
+        if: ${{ inputs.local-config-path != '' && inputs.local-config-path != null }}
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-local-config@master
+        with:
+          local-config-path: ${{ inputs.local-config-path }}/1
+          deploy-sub-env: ${{ inputs.multi-service-name }}
+          deploy-env: ${{ env.deploy_env_lowercase }}
+      - name: Do health check
+        uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
+        with:
+          env_not_ready: ${{ env.env_not_ready }}
+          deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
+          skip: false
+      - name: Docker build and push
+        if: ${{ env.multi-task-definition-file == null || env.multi-task-definition-file == '' }}
+        id: docker-build
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-tools-region: ${{ env.aws-tools-region }}
+          aws-role: ${{ env.aws-role }}
+          project-name: ${{ inputs.containerName }}
+          aws-registry: ${{ env.aws-registry }}
+          docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
+          need-del-local-image: true
+          env-commit-sha: ${{ env.env-commit-sha }}
+          add-reg-name: ${{ inputs.multi-service-name }}
+      - name: Deploy Amazon ECS task definition for none prod
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ !contains(env.deploy_env_lowercase, 'prod') }}
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.multi-task-definition-file }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
+          wait-for-minutes: 8
+          replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
+            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
+            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
+            ${{ env.replace-variables }}
+            ${{ inputs.replace-variables }}
+          wait: true
+      - name: Deploy Amazon ECS task definition for prod
+        uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
+        if: ${{ contains(env.deploy_env_lowercase, 'prod') }}
+        timeout-minutes: 10
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+          ecs-service: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-cluster: ${{ env.cluster }}
+          image-full-name: ${{ steps.docker-build.outputs.image-name }}
+          container-name: ${{ inputs.containerName }}-1
+          containerPort: ${{ inputs.containerPort }}
+          targetGroupArn: ${{ env.targetGroupArn }}
+          securityGroups: ${{ env.securityGroups }}
+          subnets: ${{ env.subnets }}
+          task-definition-file: ${{ env.multi-task-definition-file }}
+          healthCheckGracePeriodSeconds: 0
+          tags: ${{ env.tags }}
+          wait-for-minutes: 8
+          replace-variables: |
+            {{SERVICE_NAME}}=${{ inputs.ecs-service }}
+            {{PROD_ENV}}=${{ env.deploy_env_lowercase }}
+            {{ECS_EXECUTION_ROLE_ARN}}=${{ env.ecs-execution-role-arn }}
+            {{ECS_TASK_ROLE_ARN}}=${{ env.ecs-task-role-arn }}
+            {{LOG_GROUP}}=${{ env.log-group }}
+            {{AWS_REGION}}=${{ env.aws-region }}
+            ${{ env.replace-variables }}
+            ${{ inputs.replace-variables }}
+          wait: true
