@@ -74,6 +74,7 @@ jobs:
           local-config-path: ${{ inputs.local-config-path }}/2
           deploy-sub-env: ${{ inputs.multi-service-name }}
           deploy-env: ${{ env.deploy_env_lowercase }}
+          task-definition-file: ${{ env.task-definition-file }}
       - name: Do health check-2
         uses: liberty-group-tech/cicd-actions/.github/actions/health-check@master
         with:
