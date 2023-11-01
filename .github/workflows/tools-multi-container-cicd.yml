@@ -93,7 +93,7 @@ jobs:
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
           env-commit-sha: ${{ env.env-commit-sha }}
-          add-reg-name: ${{ inputs.multi-service-name }}
+          add-reg-name: sec-${{ inputs.multi-service-name }}
       - name: Fill in the new image ID in the Amazon ECS task definition none prod-2
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         id: task-def-2-none-prod
@@ -164,7 +164,7 @@ jobs:
           docker-build-arg: "--build-arg APP_ENV=${{ env.deploy_env_lowercase }} ${{ inputs.docker_arg_list }}"
           need-del-local-image: true
           env-commit-sha: ${{ env.env-commit-sha }}
-          add-reg-name: ${{ inputs.multi-service-name }}
+          add-reg-name: pri-${{ inputs.multi-service-name }}
       - name: Deploy Amazon ECS task definition for none prod
         uses: liberty-group-tech/cicd-actions/.github/actions/ecs-deploy@master
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') }}
