@@ -170,7 +170,6 @@ jobs:
           add-reg-name: pri-${{ inputs.multi-service-name }}
       - name: Docker push-2
         if: ${{ steps.docker-build-2.outputs.image-name != null && steps.docker-build-2.outputs.image-name != '' }}
-        id: docker-build-2
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-push-only@master
         with:
           aws-region: ${{ env.aws-region }}
