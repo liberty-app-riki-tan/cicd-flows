@@ -152,7 +152,6 @@ jobs:
           deploy_env_lowercase: ${{ env.deploy_env_lowercase }}
           skip: false
       - name: Docker build and push
-        if: ${{ env.multi-task-definition-file == null || env.multi-task-definition-file == '' }}
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
         with:
