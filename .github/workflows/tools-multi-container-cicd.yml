@@ -99,8 +99,8 @@ jobs:
         id: task-def-2-none-prod
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
         with:
-          task-definition: ${{ env.task-definition-file }}
-          container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          task-definition: ${{ env.task-definition-file }}-2
+          container-name: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
           replace-variables: |
             {{SERVICE_NAME}}=${{ inputs.ecs-service }}
@@ -121,8 +121,8 @@ jobs:
         id: task-def-2-prod
         uses: liberty-group-tech/cicd-actions/.github/actions/amazon-ecs-render-task-definition@master
         with:
-          task-definition: ${{ env.task-definition-file }}
-          container-name: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          task-definition: ${{ env.task-definition-file }}-2
+          container-name: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-2
           image: ${{ steps.docker-build-2.outputs.image-name }}
           replace-variables: |
             {{SERVICE_NAME}}=${{ inputs.ecs-service }}
@@ -172,7 +172,7 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-service: liberty-${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-1
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
           container-name: ${{ inputs.containerName }}
@@ -200,10 +200,10 @@ jobs:
         with:
           aws-region: ${{ env.aws-region }}
           aws-role: ${{ env.aws-role }}
-          ecs-service: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}
+          ecs-service: ${{ env.deploy_env_lowercase }}-${{ inputs.ecs-service }}-1
           ecs-cluster: ${{ env.cluster }}
           image-full-name: ${{ steps.docker-build.outputs.image-name }}
-          container-name: ${{ inputs.containerName }}-1
+          container-name: ${{ inputs.containerName }}
           containerPort: ${{ inputs.containerPort }}
           targetGroupArn: ${{ env.targetGroupArn }}
           securityGroups: ${{ env.securityGroups }}
