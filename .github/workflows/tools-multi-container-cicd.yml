@@ -112,7 +112,7 @@ jobs:
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           need-replace: false
-      - name: add amd show task description none prod-2
+      - name: add and show task description none prod-2
         if: ${{ !contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
           echo "multi-task-definition-file=${{ steps.task-def-2-none-prod.outputs.task-definition }}" >>${GITHUB_ENV}
@@ -136,7 +136,7 @@ jobs:
             ${{ env.replace-variables }}
             ${{ inputs.replace-variables }}
           need-replace: false
-      - name: add amd show task description prod-2
+      - name: add and show task description prod-2
         if: ${{ contains(env.deploy_env_lowercase, 'prod') && (env.multi-task-definition-file == null || env.multi-task-definition-file == '') }}
         run: |
           echo "multi-task-definition-file=${{ steps.task-def-2-prod.outputs.task-definition }}" >>${GITHUB_ENV}
