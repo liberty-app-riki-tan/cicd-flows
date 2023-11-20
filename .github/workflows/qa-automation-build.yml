@@ -1,0 +1,34 @@
+on:
+  workflow_call:
+
+jobs:
+  build_run:
+    runs-on: [ self-hosted, mvn ]
+    name: QA automation build and run
+    steps:
+      - name: Checkout local repo
+        uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+      - name: Build with Maven
+        run: |
+          export M2_HOME=/home/ssm-user/apache-maven-3.8.8
+          PATH=$M2_HOME/bin:$PATH
+          echo "mvn dependency:purge-local-repository -DactTransitively=false"
+          mvn -e clean package -Dmaven.test.skip=true -U
+      - name: Run test
+        run: |
+          cd auto-web/target
+          java -jar auto-web-1.0-SNAPSHOT.jar ./classes/qa.properties
+      - name: Push report to S3
+        uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
+        with:
+          filePath: ${{ github.workspace }}/auto-web/target/test-output/
+          s3-url: liberty-dev-app-package
+          s3-prefix: liberty
+          packageKey: qa/automation/report
+          rootUrl: https://apppackage.dev-wellowallet.com
+          need-change-profile: false
