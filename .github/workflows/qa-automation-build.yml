@@ -23,6 +23,13 @@ jobs:
         run: |
           cd auto-web/target
           java -jar auto-web-1.0-SNAPSHOT.jar ./classes/qa.properties
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: install package
+        run: |
+          pip install boto3==1.26.153
       - name: Push report to S3
         uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
         with:
