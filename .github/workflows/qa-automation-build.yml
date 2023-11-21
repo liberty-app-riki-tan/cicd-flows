@@ -3,7 +3,7 @@ on:
 
 jobs:
   build_run:
-    runs-on: [ self-hosted, mvn ]
+    runs-on: [ self-hosted, automation ]
     name: QA automation build and run
     steps:
       - name: Checkout local repo
@@ -17,7 +17,6 @@ jobs:
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
-          echo "mvn dependency:purge-local-repository -DactTransitively=false"
           mvn -e clean package -Dmaven.test.skip=true -U
       - name: Run test
         run: |
@@ -30,11 +29,6 @@ jobs:
       - name: install package
         run: |
           pip install boto3==1.26.153
-      - name: Assume new role
-        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
-        with:
-          aws-region: ap-southeast-1
-          aws-role: arn:aws:iam::658425299717:role/tf_liberty_dev_ghe_runner_assume_role
       - name: Push report to S3
         uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
         with:
