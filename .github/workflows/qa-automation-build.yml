@@ -38,3 +38,4 @@ jobs:
           packageKey: qa/automation/report
           rootUrl: https://apppackage.dev-wellowallet.com
           need-change-profile: false
+          distribution-id: ENPXWB4JCF7NN
