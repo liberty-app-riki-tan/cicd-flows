@@ -43,6 +43,10 @@ on:
         required: false
         type: number
         default: -1
+      gradle-args:
+        required: false
+        type: string
+        default: -PrepoUrl=https://nexus-prod.tools-liberty.com/repository/maven-public/
 jobs:
   ci_build:
     runs-on: [ self-hosted ]
@@ -83,7 +87,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
-          gradle-args: -PrepoUrl=https://nexus-prod.tools-liberty.com/repository/maven-public/
+          gradle-args: ${{ inputs.gradle-args }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
