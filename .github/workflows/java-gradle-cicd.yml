@@ -74,6 +74,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+          gradle-args: -PrepoUrl=https://nexus-dev.tools-liberty.com/repository/maven-public/
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
