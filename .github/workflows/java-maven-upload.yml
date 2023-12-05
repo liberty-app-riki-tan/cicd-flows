@@ -63,4 +63,4 @@ jobs:
         run: |
           export M2_HOME=/home/ssm-user/apache-maven-3.8.8
           PATH=$M2_HOME/bin:$PATH
-          mvn deploy -Dmaven.test.skip=true ${{ inputs.maven-param }} ${{ inputs.config-xml-path }} ${{ inputs.pom-file-path }}
+          mvn -Dmaven.test.skip=true ${{ inputs.maven-param }} ${{ inputs.config-xml-path }} ${{ inputs.pom-file-path }} deploy
