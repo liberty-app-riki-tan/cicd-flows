@@ -87,6 +87,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           jar-path: ${{ inputs.jar-path }}
+          gradle-args: ${{ inputs.gradle-args }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
