@@ -1,0 +1,66 @@
+on:
+  workflow_call:
+    inputs:
+      jar-path:
+        required: false
+        type: string
+      java-version:
+        required: false
+        type: number
+      deploy-env:
+        required: false
+        type: string
+      repo-name:
+        required: false
+        type: string
+      branch:
+        required: false
+        type: string
+      maven-param:
+        required: false
+        type: string
+      cp-jar-cmd:
+        required: false
+        type: string
+      pom-file-path:
+        required: false
+        type: string
+      config-xml-path:
+        required: false
+        type: string
+
+jobs:
+  ci_build:
+    runs-on: [ self-hosted, dev-qa-ci ]
+    environment:
+      name: ${{ inputs.deploy-env }}
+    env:
+      service-tag: ${{ inputs.deploy_tag }}
+      deploy_env: ${{ inputs.deploy-env }}
+    name: Upload flow
+    steps:
+      - name: Checkout dedicate repo
+        uses: actions/checkout@v4
+        with:
+          repository: liberty-group-tech/${{ inputs.repo-name }}
+          token: ${{ secrets.REPO_T }}
+          ref: ${{ inputs.branch }}
+          fetch-depth: 0
+          path: .
+      - name: Set env for dedicate repo
+        run: |
+          echo "env-commit-sha=`git rev-parse HEAD`" >>${GITHUB_ENV}
+        shell: bash
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+      - uses: gradle/gradle-build-action@v2
+        with:
+          arguments: publish
+          gradle-version: release-candidate
+          build-root-directory: ${{ inputs.jar-path }}
