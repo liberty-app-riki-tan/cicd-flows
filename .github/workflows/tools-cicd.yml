@@ -34,6 +34,9 @@ on:
       dockerfile-path:
         required: false
         type: string
+      pre-command:
+        required: false
+        type: string
   
 jobs:
   ci_build:
@@ -73,6 +76,10 @@ jobs:
         if: ${{ inputs.dockerfile-path != '' }}
         run: |
           cp ${{ inputs.dockerfile-path }} Dockerfile
+      - name: Do pre command if need
+        if: ${{ inputs.pre-command != '' }}
+        run: |
+          ${{ inputs.pre-command }}
       - name: Docker build and push
         id: docker-build
         uses: liberty-group-tech/cicd-actions/.github/actions/ecr-build-push@master
