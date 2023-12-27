@@ -33,7 +33,7 @@ jobs:
     - name: Push to S3
       uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
       with:
-        filePath: ${{ github.workspace }}/app/build/outputs/apk/
+        filePath: ${{ github.workspace }}/app/build/outputs/
         s3-url: liberty-dev-app-package
         s3-prefix: liberty
         packageKey: android/${{ github.sha }}-${{ github.run_number }}
