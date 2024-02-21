@@ -98,6 +98,35 @@ jobs:
         id: output
         run: |
           echo "image-name=${{ needs.ci_build.outputs.image-name }}" >> $GITHUB_OUTPUT
+  upload_static:
+    runs-on: [ self-hosted ]
+    needs: [image_confirm]
+    environment:
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      origin_deploy_tag: ${{ inputs.deploy_tag }}
+    name: Upload Static Files
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-prod-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: prod
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: docker build
+        run: |
+          docker build --build-arg BUILDER_IMAGE=${{ needs.image_confirm.outputs.image-name }} -t static-files/upload:latest . -f static.upload.Dockerfile
   pre_prod_deploy:
     name: Pre Prod Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
