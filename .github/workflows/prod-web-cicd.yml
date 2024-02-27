@@ -129,6 +129,7 @@ jobs:
       - name: docker build
         run: |
           docker build --build-arg DEFAULT_REGION=${{ env.aws-region }} --build-arg ASSUME_ROLE=${{ env.aws-role }} --build-arg BUILDER_IMAGE=${{ needs.image_confirm.outputs.image-name }} -t static-files/upload:latest . -f static.upload.Dockerfile
+          docker rmi static-files/upload:latest
   pre_prod_deploy:
     name: Pre Prod Deploy
     uses: liberty-group-tech/cicd-flows/.github/workflows/prod-cd.yml@master
