@@ -128,6 +128,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: docker build
         run: |
+          echo "[profile wellowallet] \n role_arn = ${{ env.aws-role }} \n credential_source = Ec2InstanceMetadata \n region = ${{ env.aws-region }}" > config
           docker build --build-arg DEFAULT_REGION=${{ env.aws-region }} --build-arg ASSUME_ROLE=${{ env.aws-role }} --build-arg BUILDER_IMAGE=${{ needs.image_confirm.outputs.image-name }} -t static-files/upload:latest . -f static.upload.Dockerfile
           docker rmi static-files/upload:latest
   pre_prod_deploy:
