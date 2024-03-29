@@ -37,44 +37,6 @@ on:
         default: false
   
 jobs:
-  clear_cache:
-    runs-on: [ self-hosted ]
-    environment:
-      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
-    env:
-      deploy_env: ${{ inputs.deploy-env }}
-      origin_deploy_tag: ${{ inputs.deploy_tag }}
-    name: Clear CDN Cache
-    steps:
-      - name: Transfer env to lowercase
-        run: |
-          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
-      - name: Init Config
-        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
-        with:
-          service-config-name: ${{ inputs.service-config-name }}
-          token: ${{ secrets.REPO_T }}
-          config-file: env-config-prod-service.yml
-          deploy-env: ${{ env.deploy_env_lowercase }}
-          deploy-sub-env: prod
-      - name: Assume new role
-        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
-        with:
-          aws-region: ${{ env.aws-region }}
-          aws-role: ${{ env.aws-role }}
-      - name: Set up Python 3
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.8
-      - name: install package
-        run: |
-          pip install boto3==1.26.153
-        shell: bash
-      - name: Clear CDN Cache
-        uses: liberty-group-tech/cicd-actions/.github/actions/clear-cdn-cache@master
-        with:
-          url-str: /email-unsubscribe
-          distribution-id: E1EJ0F02ND5HO8
   ci_build:
     runs-on: [ self-hosted, dev-qa-ci ]
     environment:
@@ -198,3 +160,42 @@ jobs:
       deploy_sub_env: prod
       containerPort: ${{ inputs.containerPort }}
       origin_deploy_tag: ${{ inputs.deploy_tag }}
+  clear_cache:
+    runs-on: [ self-hosted ]
+    needs: [prod_deploy]
+    environment:
+      name: ${{ inputs.deploy-env }}${{ inputs.env-tag }}
+    env:
+      deploy_env: ${{ inputs.deploy-env }}
+      origin_deploy_tag: ${{ inputs.deploy_tag }}
+    name: Clear CDN Cache
+    steps:
+      - name: Transfer env to lowercase
+        run: |
+          echo "deploy_env_lowercase=${deploy_env,,}" >>${GITHUB_ENV}
+      - name: Init Config
+        uses: liberty-group-tech/cicd-actions/.github/actions/get-prod-config@master
+        with:
+          service-config-name: ${{ inputs.service-config-name }}
+          token: ${{ secrets.REPO_T }}
+          config-file: env-config-prod-service.yml
+          deploy-env: ${{ env.deploy_env_lowercase }}
+          deploy-sub-env: prod
+      - name: Assume new role
+        uses: liberty-group-tech/cicd-actions/.github/actions/change-aws-role@master
+        with:
+          aws-region: ${{ env.aws-region }}
+          aws-role: ${{ env.aws-role }}
+      - name: Set up Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+      - name: install package
+        run: |
+          pip install boto3==1.26.153
+        shell: bash
+      - name: Clear CDN Cache
+        uses: liberty-group-tech/cicd-actions/.github/actions/clear-cdn-cache@master
+        with:
+          url-str: /email-unsubscribe
+          distribution-id: E1EJ0F02ND5HO8
