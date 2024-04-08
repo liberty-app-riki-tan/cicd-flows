@@ -207,5 +207,5 @@ jobs:
       - name: Clear CDN Cache
         uses: liberty-group-tech/cicd-actions/.github/actions/clear-cdn-cache@master
         with:
-          url-str: /email-unsubscribe
+          url-str: /email-unsubscribe,/payment/order-confirm,/account/login
           distribution-id: E1EJ0F02ND5HO8
