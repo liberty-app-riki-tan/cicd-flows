@@ -35,6 +35,14 @@ on:
         required: false
         type: boolean
         default: false
+      need-static-upload:
+        required: false
+        type: boolean
+        default: false
+      need-clear-cache:
+        required: false
+        type: boolean
+        default: false
   
 jobs:
   ci_build:
@@ -107,6 +115,7 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
       origin_deploy_tag: ${{ inputs.deploy_tag }}
     name: Upload Static Files
+    if: ${{ !failure() && !cancelled() && inputs.need-static-upload }}
     steps:
       - name: Transfer env to lowercase
         run: |
@@ -169,6 +178,7 @@ jobs:
       deploy_env: ${{ inputs.deploy-env }}
       origin_deploy_tag: ${{ inputs.deploy_tag }}
     name: Clear CDN Cache
+    if: ${{ !failure() && !cancelled() && inputs.need-clear-cache }}
     steps:
       - name: Transfer env to lowercase
         run: |
