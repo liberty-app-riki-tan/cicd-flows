@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: [ self-hosted, macOS, ios ]
+    runs-on: macos-latest
     environment:
       name: ${{ inputs.deploy-env }}
     env:
