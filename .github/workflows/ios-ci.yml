@@ -17,11 +17,17 @@ jobs:
       exec-cmd: ${{ vars.EXEC_CMD }}
     steps:
     - uses: actions/checkout@v3
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7.5'
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.1.0'
     - name: Bundle Install
       run: bundle install
       shell: zsh {0}
     - name: Bundle EXEC Fastlane
-      run: bundle exec fastlane ${{ inputs.target }}
+      run: bundle exec fastlane ${{ inputs.target }} --verbose
       shell: zsh {0}
     - name: Push to S3
       uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
