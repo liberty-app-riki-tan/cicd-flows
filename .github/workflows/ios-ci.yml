@@ -36,12 +36,8 @@ jobs:
     - name: Bundle EXEC Fastlane
       run: bundle exec fastlane ${{ inputs.target }} --verbose
       shell: zsh {0}
-    - name: Push to S3
-      uses: liberty-group-tech/cicd-actions/.github/actions/s3-upload@master
+    - name: Push to artifact
+      uses: actions/upload-artifact@v4
       with:
-        filePath: ${{ github.workspace }}/build/
-        s3-url: liberty-dev-app-package
-        s3-prefix: liberty
-        packageKey: ios/${{ github.sha }}-${{ github.run_number }}
-        rootUrl: https://apppackage.dev-wellowallet.com
-        need-change-profile: true
+        name: wello-dev-ipa
+        path: ${{ github.workspace }}/build/
